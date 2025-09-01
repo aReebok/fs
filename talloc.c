@@ -1,22 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "talloc.h"
+#include <assert.h>
 
-typedef struct Node {
-    void* item; 
-    struct Node* next;
-} Node;
+typedef struct Node Node;
 
 Node* ACTIV_LIST = NULL;
 
-void display(Node *head){
-    printf("(");
-    while(head != NULL){
-        printf(" %p,", head->item);
-        head = head->next;
-    }
-    puts(")");
-}
+struct Node {
+    void* item; 
+    Node* next;
+};
 
 Node* insert_front(Node* head, void* item) {
     Node* new_node = malloc(sizeof(Node));
@@ -27,6 +21,7 @@ Node* insert_front(Node* head, void* item) {
 
 void *talloc(size_t size) {
     void* alloc = malloc(size);
+    assert(alloc != NULL && "talloc: malloc failed");
     ACTIV_LIST = insert_front(ACTIV_LIST, alloc);
     return alloc;
 }
@@ -46,6 +41,16 @@ void texit(int status) {
     tfree();
     exit(status);
 }
+
+// void display(Node *head){
+//     printf("(");
+//     while(head != NULL){
+//         printf(" %p,", head->item);
+//         head = head->next;
+//     }
+//     puts(")");
+// }
+
 
 // int main(){
 //     int* p = talloc(sizeof(int)*2);

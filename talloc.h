@@ -1,5 +1,3 @@
-#include <stdlib.h>
-
 #ifndef _TALLOC
 #define _TALLOC
 

@@ -1,4 +1,7 @@
 # fs
 
 run using 
-```gcc main.c talloc.c -o a.out```
+```make```
+
+clean using 
+```make clean```
