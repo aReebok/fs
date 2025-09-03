@@ -50,7 +50,7 @@ int insert_buffer_cache(Buffer * const buf) {
     int buf_h = hash_buffer(buf);
     // ERROR CHECKING and return 1
     insert_head(&buf->fl_hook, &BUF_FREE_LIST); //TODO:insert_head: Should return 1 or 0
-    insert_head(&buf->fl_hook, &hashq[buf_h]);  //TODO:insert_tail: Should return 1 or 0
+    insert_head(&buf->hq_hook, &hashq[buf_h]);  //TODO:insert_tail: Should return 1 or 0
     return 0;
 }
 

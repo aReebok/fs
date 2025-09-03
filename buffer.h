@@ -21,6 +21,7 @@ struct Buffer {
     char data[BLOCK_SIZE]; // for now just chars
     // hash queue list TO DO
     free_list fl_hook; // embedded, contains a prev: tail and next: head
+    free_list hq_hook; 
 };
 
 // member functions just for buffer struct
