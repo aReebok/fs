@@ -5,6 +5,7 @@
 
 #define BLOCK_SIZE  1024        // File System block size 
 #define BUF_FL_SZ   10
+#define HASH_SIZE   4
 #define B_LOCKED    0x01        // Buffer Status Flags
 #define B_VALID     0x02
 #define B_DELWRI    0x04

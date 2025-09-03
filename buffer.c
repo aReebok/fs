@@ -4,7 +4,7 @@
 
 // member functions just for buffer struct
 int hash_buffer(const Buffer* const buf) {
-    return buf->block_no % 4;
+    return buf->block_no % HASH_SIZE;
 }
 
 void set_buf_status(Buffer* const buf, const unsigned int status) {
