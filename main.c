@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "free_list.h"
+#include "cdllist.h"
 #include "talloc.h"
 #include "buffer.h"
 
@@ -10,12 +10,12 @@
 //      ((type *)((char *)(ptr) - (size_t)&((type *)0)->member))
 // #endif
 
-free_list *BUF_HASH_QUEUE = NULL;
-free_list BUF_FREE_LIST = {&BUF_FREE_LIST, &BUF_FREE_LIST};
+cdllist *BUF_HASH_QUEUE = NULL;
+cdllist BUF_FREE_LIST = {&BUF_FREE_LIST, &BUF_FREE_LIST};
 // TO DO create buffer_hash_queue -> then we have a full buffer cache
 
-void print_list_links(free_list* list) { // for debugging
-    free_list* tmp = list;
+void print_list_links(cdllist* list) { // for debugging
+    cdllist* tmp = list;
         if (is_empty(tmp)) {
             printf("Printing empty list\n");
         } else {
@@ -29,7 +29,7 @@ void print_list_links(free_list* list) { // for debugging
     printf("\tTAIL\n\n");
 }
 
-void print_hash_queue() {
+void print_hash_queue() { // for debugging
     printf("Printing each HashQueue [HEAD NODE only]\n");
     for (int i = 0; i < HASH_SIZE; i++) {
         printf("Bucket %d: head=%p next=%p prev=%p size=%d\n",
@@ -41,7 +41,7 @@ void print_hash_queue() {
     printf("\n");
 }
 
-void print_buffer_info_free_list(free_list* list) { // for debugging
+void print_buffer_info_free_list(cdllist* list) { // for debugging
     if (is_empty(list)) {
         printf("Empty list\n");
         return;
@@ -49,7 +49,7 @@ void print_buffer_info_free_list(free_list* list) { // for debugging
         printf("> Printing actual buffer content from free list...\n");
     };
 
-    free_list* curr = list->next;
+    cdllist* curr = list->next;
     Buffer* temp;
     do {
         temp = container_of(curr, Buffer, fl_hook);
@@ -60,7 +60,7 @@ void print_buffer_info_free_list(free_list* list) { // for debugging
 }
 
 int insert_buffer_cache(Buffer * const buf) {
-    printf("> Adding a buffer to buffer pool: ...\n");
+    // printf("> Adding a buffer to buffer pool: ...\n");
     int buf_h = hash_buffer(buf);
     // ERROR CHECKING and return 1
     insert_head(&buf->fl_hook, &BUF_FREE_LIST); //TODO:insert_head: Should return 1 or 0
@@ -69,19 +69,25 @@ int insert_buffer_cache(Buffer * const buf) {
 }
 
 int main() {
-    // Hash setup - HASH_SIZE in buffer.h
-    BUF_HASH_QUEUE = talloc(sizeof(free_list) * HASH_SIZE);
+    //init HASH QUEUE
+    BUF_HASH_QUEUE = talloc(sizeof(cdllist) * HASH_SIZE);
     for(int i = 0; i < HASH_SIZE; i++) {        
         BUF_HASH_QUEUE[i].next = &BUF_HASH_QUEUE[i];
         BUF_HASH_QUEUE[i].prev = &BUF_HASH_QUEUE[i];
     }
 
+    for (int i = 0; i < 6; i++) { // populates
+        Buffer* temp_buf = create_buf((i/3) + 1, (i % 3) * BLOCK_SIZE, 0);  
+        // block size is multiple of 4..., so all go in 0th bucket
+        insert_buffer_cache(temp_buf);
+    }
+
     print_list_links(&BUF_FREE_LIST);
     print_hash_queue();
 
-    Buffer* new_buffer1 = create_buf(1, 0, 0);
-    Buffer* new_buffer2 = create_buf(1, 257, 0);
-    Buffer* new_buffer3 = create_buf(1, 261, 0);
+    Buffer* new_buffer1 = create_buf(1, 15, 0);
+    Buffer* new_buffer2 = create_buf(1, 25, 0);
+    Buffer* new_buffer3 = create_buf(1, 963, 0);
     insert_buffer_cache(new_buffer1);
     insert_buffer_cache(new_buffer2);
     insert_buffer_cache(new_buffer3);
@@ -89,6 +95,5 @@ int main() {
     print_list_links(&BUF_FREE_LIST);                   // print out links
     print_hash_queue();
     print_buffer_info_free_list(&BUF_FREE_LIST);        // print out actual buffer information
-
-    return 0;
+    texit(0);
 }
