@@ -25,5 +25,6 @@ void insert_head(free_list *elm, free_list *list);
 void insert_tail(free_list *elm, free_list *list);
 void remove_from_list(free_list* elm, free_list* list);
 unsigned char is_empty(const free_list* const list);
+int size(const free_list* const list);
 
 #endif

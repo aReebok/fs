@@ -31,3 +31,13 @@ void remove_from_list(free_list* elm, free_list* list);
 unsigned char is_empty(const free_list* const list) {
     return (list->next == list && list->prev == list);
 }
+
+int size(const free_list* const list) {
+    int s = 0;
+    free_list* tmp = list->next;
+    while (tmp != list) {
+        s++;
+        tmp = tmp->next;
+    }
+    return s;
+}
