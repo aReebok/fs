@@ -1,56 +1,75 @@
 #include <stdio.h>
-#include "free_list.h"
+#include <stdlib.h>
+#include "cdllist.h"
 #include "talloc.h"
 #include "buffer.h"
+#include "bufcache.h"
 
 // Define container_of macro if not already defined
 // #ifndef container_of
-// #define container_of(ptr, type, member) \
-//     ((type *)((char *)(ptr) - (size_t)&((type *)0)->member))
+// #define container_of(ptr, type, member)
+//      ((type *)((char *)(ptr) - (size_t)&((type *)0)->member))
 // #endif
 
-free_list BUF_FREE_LIST = {&BUF_FREE_LIST, &BUF_FREE_LIST};
-// TO DO create buffer_hash_queue -> then we have a full buffer cache
-
-void print_list_links(free_list* list) { // for debugging
-    free_list* tmp = list;
+void print_list_links(cdllist* list) { // for debugging
+    cdllist* tmp = list;
         if (is_empty(tmp)) {
             printf("Printing empty list\n");
         } else {
             printf("Printing non-empty list\n");
         };
-
+    printf("\tHEAD\n");
     do {
         printf("\t{%p: next[%p] prev[%p]}\n", tmp, tmp->next, tmp->prev);
         tmp = tmp->next;
     } while(tmp != list);
+    printf("\tTAIL\n\n");
 }
 
-void print_buffer_info_free_list(free_list* list) { // for debugging
+void print_buffer_info_free_list(cdllist* list) { // for debugging
     if (is_empty(list)) {
         printf("Empty list\n");
         return;
     } else {
-        printf("Printing buffer info from free list...\n");
+        printf("> Printing actual buffer content from free list...\n");
     };
 
-    free_list* curr = list->next;
+    cdllist* curr = list->next;
     Buffer* temp;
     do {
         temp = container_of(curr, Buffer, fl_hook);
-        printf("    {Location dev %d blk %d \t| Status: %d},\n", \
-                temp->device_no, temp->block_no, temp->status);
+        print_buffer(temp);
         curr = curr->next;
     } while(curr != list);
 }
 
 int main() {
-    print_list_links(&BUF_FREE_LIST);
-    Buffer* new_buffer = create_buf(1, 0, 0);
-    insert_head(&new_buffer->fl_hook, &BUF_FREE_LIST);
-    Buffer* new_buffer2 = create_buf(1, 256, 0);
-    insert_head(&new_buffer2->fl_hook, &BUF_FREE_LIST);
-    print_list_links(&BUF_FREE_LIST);                   // print out links
-    print_buffer_info_free_list(&BUF_FREE_LIST);        // print out actual buffer information
-    return 0;
+    struct BCache * buffer_cache = initialize_cache();
+
+    for (int i = 0; i < 6; i++) { // populates
+        Buffer* temp_buf = create_buf((i/3) + 1, (i % 3) * BLOCK_SIZE, 0);  
+        // block size is multiple of 4..., so all go in 0th bucket
+        bcache_insert(temp_buf, buffer_cache);
+    }
+
+    print_list_links(buffer_cache -> BUF_FREE_LIST);
+    print_hash_queue(buffer_cache);
+
+    int block_nums[3] = {0, 257, 261};
+    for (int i = 0; i < 3; i++) {
+        Buffer* new_buffer1 = create_buf(1, block_nums[i], 0);
+        bcache_insert(new_buffer1, buffer_cache);
+    }
+
+    print_list_links(buffer_cache -> BUF_FREE_LIST);                   // print out links
+    print_hash_queue(buffer_cache);
+    print_buffer_info_free_list(buffer_cache -> BUF_FREE_LIST);        // print out actual buffer information
+    
+    // quick check on hash searching:
+    puts("Printing Buffer hash search");
+    Buffer * temp = search_hq(257, buffer_cache);
+    print_buffer(temp);
+
+    puts("=====Exiting Main: Safe exiting. Deleting RAM=====");
+    texit(0);
 }

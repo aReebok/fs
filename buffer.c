@@ -4,7 +4,11 @@
 
 // member functions just for buffer struct
 int hash_buffer(const Buffer* const buf) {
-    return buf->block_no % 4;
+    return buf->block_no % HASH_SIZE;
+}
+
+int hash_block_num(int const block_no) {
+    return block_no % HASH_SIZE;
 }
 
 void set_buf_status(Buffer* const buf, const unsigned int status) {
@@ -19,4 +23,9 @@ Buffer* create_buf(const unsigned int devno, \
     new_buf->block_no = blockno;
     new_buf->status = status;
     return new_buf;
+}
+
+void print_buffer(Buffer * const buf) {
+    printf("    {Location dev %d blk %d \t| Status: %d},\n", \
+        buf->device_no, buf->block_no, buf->status);
 }
