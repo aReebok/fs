@@ -8,7 +8,7 @@ struct BCache {
 };
 
 int bcache_insert(Buffer * const buf, struct BCache *bc);
-struct BCache initialize_cache();
+struct BCache * initialize_cache();
 void print_hash_queue(struct BCache *bc);
 Buffer * search_hq(int block_num, struct BCache *bc);
 

@@ -31,8 +31,10 @@ Buffer *create_buf(const unsigned int devno,
 
 // Compute the hash queue index for a buffer (0 .. HASH_SIZE-1).
 int hash_buffer(const Buffer *const buf);
+int hash_block_num(int const block_no);
 
 // Overwrite the status flags of a buffer.
 void set_buf_status(Buffer *const buf, unsigned int status);
+void print_buffer(Buffer * const buf);
 
 #endif // _BUFFER_H

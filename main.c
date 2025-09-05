@@ -38,34 +38,38 @@ void print_buffer_info_free_list(cdllist* list) { // for debugging
     Buffer* temp;
     do {
         temp = container_of(curr, Buffer, fl_hook);
-        printf("    {Location dev %d blk %d \t| Status: %d},\n", \
-                temp->device_no, temp->block_no, temp->status);
+        print_buffer(temp);
         curr = curr->next;
     } while(curr != list);
 }
 
 int main() {
-    struct BCache buffer_cache = initialize_cache();
+    struct BCache * buffer_cache = initialize_cache();
 
     for (int i = 0; i < 6; i++) { // populates
         Buffer* temp_buf = create_buf((i/3) + 1, (i % 3) * BLOCK_SIZE, 0);  
         // block size is multiple of 4..., so all go in 0th bucket
-        bcache_insert(temp_buf, &buffer_cache);
+        bcache_insert(temp_buf, buffer_cache);
     }
 
-    print_list_links(buffer_cache.BUF_FREE_LIST);
-    print_hash_queue(&buffer_cache);
+    print_list_links(buffer_cache -> BUF_FREE_LIST);
+    print_hash_queue(buffer_cache);
 
     int block_nums[3] = {0, 257, 261};
     for (int i = 0; i < 3; i++) {
         Buffer* new_buffer1 = create_buf(1, block_nums[i], 0);
-        bcache_insert(new_buffer1, &buffer_cache);
+        bcache_insert(new_buffer1, buffer_cache);
     }
 
-    print_list_links(buffer_cache.BUF_FREE_LIST);                   // print out links
-    print_hash_queue(&buffer_cache);
-    print_buffer_info_free_list(buffer_cache.BUF_FREE_LIST);        // print out actual buffer information
+    print_list_links(buffer_cache -> BUF_FREE_LIST);                   // print out links
+    print_hash_queue(buffer_cache);
+    print_buffer_info_free_list(buffer_cache -> BUF_FREE_LIST);        // print out actual buffer information
     
+    // quick check on hash searching:
+    puts("Printing Buffer hash search");
+    Buffer * temp = search_hq(257, buffer_cache);
+    print_buffer(temp);
+
     puts("=====Exiting Main: Safe exiting. Deleting RAM=====");
     texit(0);
 }
