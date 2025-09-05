@@ -14,11 +14,11 @@ int bcache_insert(Buffer * const buf, struct BCache * bc) {
 struct BCache initialize_cache() {
     struct BCache bc = {NULL, NULL};
 
-    bc.BUF_FREE_LIST = talloc(sizeof(free_list));
+    bc.BUF_FREE_LIST = talloc(sizeof(cdllist));
     bc.BUF_FREE_LIST -> next = bc.BUF_FREE_LIST;
     bc.BUF_FREE_LIST -> prev = bc.BUF_FREE_LIST;
 
-    bc.BUF_HASH_QUEUE = talloc(sizeof(free_list) * HASH_SIZE);
+    bc.BUF_HASH_QUEUE = talloc(sizeof(cdllist) * HASH_SIZE);
     for(int i = 0; i < HASH_SIZE; i++) {
         // Does this abomination work as I think it does?
         bc.BUF_HASH_QUEUE[i].next = bc.BUF_HASH_QUEUE + i;

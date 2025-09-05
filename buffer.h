@@ -1,11 +1,11 @@
 #ifndef _BUFFER_H
 #define _BUFFER_H
 
-#include "free_list.h"
+#include "cdllist.h"
 
 #define BLOCK_SIZE  1024        // File System block size 
-#define BUF_FL_SZ   10
 #define HASH_SIZE   4
+
 #define B_LOCKED    0x01        // Buffer Status Flags
 #define B_VALID     0x02
 #define B_DELWRI    0x04
@@ -20,17 +20,19 @@ struct Buffer {
     unsigned int status;
     char data[BLOCK_SIZE]; // for now just chars
     // hash queue list TO DO
-    free_list fl_hook; // embedded, contains a prev: tail and next: head
-    free_list hq_hook; 
+    cdllist fl_hook; // embedded, contains a prev: tail and next: head
+    cdllist hq_hook; 
 };
 
-// member functions just for buffer struct
-Buffer* create_buf(const unsigned int devno, \
-    const unsigned int blockno, \
-    const unsigned int status);
+// Create a new buffer object with given device, block, and status flags.
+Buffer *create_buf(const unsigned int devno,
+                   const unsigned int blockno,
+                   const unsigned int status);
 
-int hash_buffer(const Buffer* const buf);
+// Compute the hash queue index for a buffer (0 .. HASH_SIZE-1).
+int hash_buffer(const Buffer *const buf);
 
-void set_buf_status(Buffer* const buf, unsigned int status);
+// Overwrite the status flags of a buffer.
+void set_buf_status(Buffer *const buf, unsigned int status);
 
-#endif
+#endif // _BUFFER_H

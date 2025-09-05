@@ -3,8 +3,8 @@
 
 // struct definition
 struct BCache {
-    free_list * BUF_HASH_QUEUE;
-    free_list * BUF_FREE_LIST;
+    cdllist * BUF_HASH_QUEUE;
+    cdllist * BUF_FREE_LIST;
 };
 
 int bcache_insert(Buffer * const buf, struct BCache *bc);
