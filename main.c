@@ -48,16 +48,16 @@ int main() {
     struct BCache buffer_cache = initialize_cache();
 
     print_list_links(buffer_cache.BUF_FREE_LIST);
-    print_hash_queue(buffer_cache);
+    print_hash_queue(&buffer_cache);
 
     int block_nums[3] = {0, 257, 261};
     for(int i = 0; i < 3; i++) {
         Buffer* new_buffer1 = create_buf(1, block_nums[i], 0);
-        BCache_Insert(new_buffer1, buffer_cache);
+        bcache_insert(new_buffer1, &buffer_cache);
     }
 
     print_list_links(buffer_cache.BUF_FREE_LIST);                   // print out links
-    print_hash_queue(buffer_cache);
+    print_hash_queue(&buffer_cache);
     print_buffer_info_free_list(buffer_cache.BUF_FREE_LIST);        // print out actual buffer information
 
     return 0;

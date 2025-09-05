@@ -7,9 +7,10 @@ struct BCache {
     free_list * BUF_FREE_LIST;
 };
 
-int BCache_Insert(Buffer * const buf, struct BCache bc);
+int bcache_insert(Buffer * const buf, struct BCache *bc);
 struct BCache initialize_cache();
-void print_hash_queue(struct BCache bc);
+void print_hash_queue(struct BCache *bc);
+Buffer * search_hq(int block_num, struct BCache *bc);
 
 Buffer getblk(int const blk_num);
 int brelse(int const buf_num);
