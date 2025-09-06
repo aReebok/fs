@@ -1,5 +1,8 @@
+#include "buffer.h"
+#include <stdio.h>
 #ifndef _DISK_DRV_H
 #define _DISK_DRV_H
+
 
 // should be able to handle disk read and disk writes for 
 //      Buffer -> data blocks
@@ -16,11 +19,11 @@ struct diskdrv {
 // input -- read
 // returns int, how many chars/bytes read in
 // and fills given buffer with data from vfs
-size_t data_block_read(char* r_buf, int block_location);
+size_t data_block_read(Buffer* r_buf);
 
 
 // output -- write
 // returns int, how many chars/bytes wrote out
-size_t data_block_write(char* w_buf, int block_location);
+size_t data_block_write(Buffer* w_buf);
 
 #endif
