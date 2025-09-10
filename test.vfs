@@ -1,0 +1,12 @@
+super_block 4
+inode_table 5
+disk_block 6
+super block content here
+one inode content here
+disk block 0 content here
+disk block 1 content here
+disk block 2 content here
+disk block 3 content here
+disk block 4 content here
+disk block 5 content here
+disk block 6 content here
