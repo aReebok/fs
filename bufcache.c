@@ -13,7 +13,7 @@ int bcache_insert(Buffer * const buf, struct BCache * bc) {
 }
 
 struct BCache * initialize_cache() {
-    struct BCache * bc = talloc(sizeof(*bc));
+    struct BCache * bc = talloc(sizeof(*bc)); //TODO: when does talloc return NULL... null handling
 
     bc -> BUF_FREE_LIST = talloc(sizeof(cdllist));
     bc -> BUF_FREE_LIST -> next = bc->BUF_FREE_LIST;

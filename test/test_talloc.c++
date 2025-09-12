@@ -17,9 +17,5 @@ TEST(talloc, allocate_fail) {
 	ASSERT_EQ(a, (void*) NULL);
 	a = (int *) talloc(-100);
 	ASSERT_EQ(a, (void*) NULL);
-}
-
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+	tfree();
 }
