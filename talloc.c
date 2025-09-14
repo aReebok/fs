@@ -21,8 +21,10 @@ Node* insert_front(Node* head, void* item) {
 
 void *talloc(size_t size) {
     void* alloc = malloc(size);
-    assert(alloc != NULL && "talloc: malloc failed");
-    ACTIV_LIST = insert_front(ACTIV_LIST, alloc);
+    if (alloc == NULL)
+        printf("talloc: malloc failed.");
+    else
+        ACTIV_LIST = insert_front(ACTIV_LIST, alloc);
     return alloc;
 }
 

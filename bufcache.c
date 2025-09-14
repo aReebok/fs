@@ -2,24 +2,39 @@
 #include "bufcache.h"
 #include <unistd.h>
 
+#define CHECK_NULL(var) \
+    if ((var) == NULL) { \
+        printf("%s\n", "Critical Talloc Failure. Halting Buffer Cache Initialization Process");\
+        return NULL; \
+    }
 
 int bcache_insert(Buffer * const buf, struct BCache * bc) {
     printf("> Adding a buffer to buffer pool: ...\n");
     int buf_h = hash_buffer(buf);
-    //ERROR CHECKING and return 1
-    insert_head(&buf -> fl_hook, bc -> BUF_FREE_LIST);
-    insert_tail(&buf -> hq_hook, bc -> BUF_HASH_QUEUE + buf_h);
+    if (insert_head(&buf -> fl_hook, bc -> BUF_FREE_LIST)) {
+        printf("Error: Could not add buffer to FREE LIST");
+        return 1;
+    }
+    if (insert_tail(&buf -> hq_hook, bc -> BUF_HASH_QUEUE + buf_h)) {
+        printf("Error: Could not add buffer to HASH QUEUE");
+        return 1;
+    }
     return 0;
 }
 
 struct BCache * initialize_cache() {
-    struct BCache * bc = talloc(sizeof(*bc)); //TODO: when does talloc return NULL... null handling
+    struct BCache * bc = talloc(sizeof(*bc));
+    CHECK_NULL(bc);
 
     bc -> BUF_FREE_LIST = talloc(sizeof(cdllist));
+    CHECK_NULL(bc -> BUF_FREE_LIST);
+    
     bc -> BUF_FREE_LIST -> next = bc->BUF_FREE_LIST;
     bc -> BUF_FREE_LIST -> prev = bc->BUF_FREE_LIST;
 
     bc->BUF_HASH_QUEUE = talloc(sizeof(cdllist) * HASH_SIZE);
+    CHECK_NULL(bc -> BUF_HASH_QUEUE);
+
     for(int i = 0; i < HASH_SIZE; i++) {
         // Does this abomination work as I think it does?
         bc->BUF_HASH_QUEUE[i].next = bc->BUF_HASH_QUEUE + i;
@@ -56,7 +71,6 @@ Buffer * search_hq(int block_num, struct BCache *bc) {
 Buffer * getblk(int const blk_num, struct BCache *bc) {
     Buffer * ret = NULL;
     // 10 seconds... If buffer is not available in 10 seconds, return NULL...
-    // TODO: Exception throwing maybe?
     int sleep_timer = 10 * 1000; 
     // may need to change this slightly (null check) to not stall as we have just one process rn
     while(ret == NULL) { 
