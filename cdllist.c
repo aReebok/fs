@@ -1,10 +1,11 @@
 #include "cdllist.h"
 #include "talloc.h"
 #include <stdio.h>
+#include "helpercode.h"
 
 int insert_head(cdllist *elm, cdllist *list) {
     if (list == NULL) {
-        printf("[insert_head] === Critical: List is uninitialized and cannot insert element to list\n");
+        perr("[insert_head] === Critical: List is uninitialized and cannot insert element to list\n");
         return 1;
     }
     if (list->next == list) { // empty list
@@ -21,7 +22,7 @@ int insert_head(cdllist *elm, cdllist *list) {
 
 int insert_tail(cdllist *elm, cdllist *list) {
     if (list == NULL) {
-        printf("[insert_tail] === Critical: List is uninitialized and cannot insert element to list\n");
+        perr("[insert_tail] === Critical: List is uninitialized and cannot insert element to list\n");
         return 1;
     }
     if (list->next == list) {           // empty list
@@ -38,7 +39,7 @@ int insert_tail(cdllist *elm, cdllist *list) {
 
 cdllist* remove_from_head(cdllist* list) {
     if (is_empty(list)) {
-        printf("[remove_from_head] === Critical: Cannot remove from empty list\n");
+        perr("[remove_from_head] === Critical: Cannot remove from empty list\n");
         return NULL;
     }
 

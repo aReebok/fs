@@ -3,7 +3,7 @@ CFLAGS = -Wall -O2
 BUILD_DIR = build
 TEST_DIR = test/build
 
-OBJS = main.o talloc.o cdllist.o buffer.o bufcache.o
+OBJS = main.o talloc.o cdllist.o buffer.o bufcache.o helpercode.o
 BUILD_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))
 
 TARGET = $(BUILD_DIR)/main

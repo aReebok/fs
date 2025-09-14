@@ -1,22 +1,26 @@
 #include <stdio.h>
 #include "bufcache.h"
 #include <unistd.h>
+#include "helpercode.h"
 
 #define CHECK_NULL(var) \
     if ((var) == NULL) { \
-        printf("%s\n", "Critical Talloc Failure. Halting Buffer Cache Initialization Process");\
+        perr("Critical Talloc Failure. Halting Buffer Cache Initialization Process.\n"); \
         return NULL; \
     }
 
 int bcache_insert(Buffer * const buf, struct BCache * bc) {
-    printf("> Adding a buffer to buffer pool: ...\n");
+    if (buf == NULL || bc == NULL)
+        return 1;
+    
+    plog("> Adding a buffer to buffer pool: ...\n");
     int buf_h = hash_buffer(buf);
     if (insert_head(&buf -> fl_hook, bc -> BUF_FREE_LIST)) {
-        printf("Error: Could not add buffer to FREE LIST");
+        perr("Error: Could not add buffer to FREE LIST");
         return 1;
     }
     if (insert_tail(&buf -> hq_hook, bc -> BUF_HASH_QUEUE + buf_h)) {
-        printf("Error: Could not add buffer to HASH QUEUE");
+        perr("Error: Could not add buffer to HASH QUEUE");
         return 1;
     }
     return 0;
@@ -44,18 +48,22 @@ struct BCache * initialize_cache() {
 }
 
 void print_hash_queue(struct BCache *bc) {
-    printf("Printing each HashQueue [HEAD NODE only]\n");
+    plog("Printing each HashQueue [HEAD NODE only]\n");
+    char str[128];
     for (int i = 0; i < HASH_SIZE; i++) {
-        printf("Bucket %d: head=%p next=%p prev=%p size=%d\n",
+        sprintf(str, "Bucket %d: head=%p next=%p prev=%p size=%d\n\0",
                i, bc -> BUF_HASH_QUEUE + i,
                bc -> BUF_HASH_QUEUE[i].next,
                bc -> BUF_HASH_QUEUE[i].prev,
             size(bc -> BUF_HASH_QUEUE + i));
+        plog(str);
     }
-    printf("\n");
+    plog("\n");
 }
 
 Buffer * search_hq(int block_num, struct BCache *bc) {
+    if (block_num < 0 || bc == NULL)
+        return NULL;
     int buf_h = hash_block_num(block_num);
     cdllist * hque = bc -> BUF_HASH_QUEUE + buf_h;
     cdllist * iter = hque -> next;
