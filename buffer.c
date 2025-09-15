@@ -28,4 +28,6 @@ Buffer* create_buf(const unsigned int devno, \
 void print_buffer(Buffer * const buf) {
     printf("    {Location dev %d blk %d \t| Status: %d},\n", \
         buf->device_no, buf->block_no, buf->status);
+    printf("\tData: %s\n", buf->data);
+    printf("------------------------------------------------------\n");
 }
