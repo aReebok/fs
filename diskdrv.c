@@ -5,6 +5,7 @@
 #include "diskdrv.h"
 #include "talloc.h"
 
+diskdrv * ssd;
 
 // Helper functions ----
 void drv_showpos(FILE* fp) {

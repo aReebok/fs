@@ -10,8 +10,6 @@
         return NULL; \
     }
 
-extern diskdrv* ssd;
-
 int bcache_insert(Buffer * const buf, struct BCache * bc) {
     if (buf == NULL || bc == NULL)
         return 1;

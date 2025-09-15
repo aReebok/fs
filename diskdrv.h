@@ -17,7 +17,7 @@ struct diskdrv {
     long super_block_start, inode_table_start, data_block_start;
 };
 
-diskdrv* ssd;
+extern diskdrv* ssd;
 
 // Initilaizes a device given path
 // sets start of data block
