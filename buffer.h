@@ -12,6 +12,8 @@
 #define B_IOBUSY    0x08
 #define B_WANTED    0x16
 
+// TODO: Create inline functins to set Buffer status 
+
 typedef struct Buffer Buffer;
 
 struct Buffer { 
