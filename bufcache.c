@@ -50,17 +50,17 @@ struct BCache * initialize_cache() {
 }
 
 void print_hash_queue(struct BCache *bc) {
-    plog("Printing each HashQueue [HEAD NODE only]\n");
+    plog("Printing each HashQueue [HEAD NODE only]");
     char str[128];
     for (int i = 0; i < HASH_SIZE; i++) {
-        sprintf(str, "Bucket %d: head=%p next=%p prev=%p size=%d\n\0",
+        sprintf(str, "Bucket %d: head=%p next=%p prev=%p size=%d\n",
                i, bc -> BUF_HASH_QUEUE + i,
                bc -> BUF_HASH_QUEUE[i].next,
                bc -> BUF_HASH_QUEUE[i].prev,
             size(bc -> BUF_HASH_QUEUE + i));
         plog(str);
     }
-    plog("\n");
+    plog("");
 }
 
 Buffer * search_hq(int block_num, struct BCache *bc) {
@@ -158,17 +158,14 @@ void brelse(Buffer* locked_buf, BCache* bc) {
     else
         insert_head(&locked_buf->fl_hook, bc->BUF_FREE_LIST);
     // lower processor execution level to allow interrupts;
-    printf("Buffer 3 status:%d \n", (locked_buf->status & B_VALID));
     locked_buf->status &= ~B_LOCKED; // unlock(buffer)
 }
 
 void bwrite(Buffer* buf, struct BCache *bc) {
     // TODO: see textbook impl
     // initiate disk write;
-    printf("Inside bwrite()\n");
-
     int len = data_block_write(buf, ssd);
-    printf("%d\n", len);
+    printf("Written %d characters to disk.\n", len);
     // if (I/O synchronous){
         // sleep(event I/O complete);
         // release buffer

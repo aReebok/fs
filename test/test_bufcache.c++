@@ -20,8 +20,8 @@ TEST(bufcache, search_hq_empty) {
 }
 
 TEST(bufcache, BC_insert_test) {
-    Buffer * bad_buf = create_buf(-1, -1,3);
-    Buffer * good_buf = create_buf(0, 6 * BLOCK_SIZE,0);
+    Buffer * bad_buf = create_buf(-1, -1, 3);
+    Buffer * good_buf = create_buf(0, 6 * BLOCK_SIZE, 0);
 
     struct BCache * bc = initialize_cache();
 
@@ -29,7 +29,7 @@ TEST(bufcache, BC_insert_test) {
     EXPECT_EQ(bcache_insert(bad_buf, bc), 0);
     EXPECT_EQ(bcache_insert(good_buf, bc), 0);
 
-    cdllist * tempList = bc-> BUF_FREE_LIST;
+    cdllist * tempList = bc->BUF_FREE_LIST;
     bc -> BUF_FREE_LIST = NULL;
     EXPECT_EQ(bcache_insert(good_buf, bc), 1);
     bc -> BUF_FREE_LIST = tempList;
@@ -41,6 +41,7 @@ TEST(bufcache, BC_insert_test) {
     EXPECT_EQ(bcache_insert(good_buf, bc), 0);
     tfree();
 }
+
 // TEST(bufcache, BC_insert_test_pass) {
 // }
 // TEST(bufcache, getblk_test) {

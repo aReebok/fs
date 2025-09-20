@@ -102,7 +102,6 @@ size_t data_block_read(Buffer* r_buf, diskdrv* device) {
 size_t data_block_write(Buffer* w_buf, diskdrv* device){
 
     int index = jump(device->fs, device->data_block_start, w_buf->block_no);
-    printf("Index: %d\n", index);
     if (index != w_buf->block_no) {  // check to see if reached correct block 
         printf("jumped to an incorrect block number while reading file: find[%d]: actual ret[%d]\n", w_buf->block_no, index);
         texit(1);

@@ -5,20 +5,22 @@
 #include <stdio.h>
 #include <string.h>
 
+#define LOG_STR_FORMAT "%s\n"
 int std_print_enabled = 1;
+
 
 // TODO: Add error checking
 int plog(char * str) {
     FILE * f = fopen("build/fslog.log", "a");
-    fprintf(f, str);    
+    fprintf(f, LOG_STR_FORMAT, str);    
     if (std_print_enabled) 
-        printf(str);
+        printf(LOG_STR_FORMAT, str);
     return strlen(str);
 }
 
 int perr(char * str) {
     FILE * f = fopen("build/fserror.err", "a");
-    fprintf(f, str);
+    fprintf(f, LOG_STR_FORMAT, str);
     if (std_print_enabled) 
         perror(str);
     return strlen(str);
