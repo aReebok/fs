@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "talloc.h"
 #include <assert.h>
+#include "helpercode.h"
 
 typedef struct Node Node;
 
@@ -21,8 +22,10 @@ Node* insert_front(Node* head, void* item) {
 
 void *talloc(size_t size) {
     void* alloc = malloc(size);
-    assert(alloc != NULL && "talloc: malloc failed");
-    ACTIV_LIST = insert_front(ACTIV_LIST, alloc);
+    if (alloc == NULL)
+        perr("talloc: malloc failed.");
+    else
+        ACTIV_LIST = insert_front(ACTIV_LIST, alloc);
     return alloc;
 }
 

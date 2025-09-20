@@ -21,10 +21,10 @@ struct cdllist {
 };
 
 // Insert an element at the front of the list.
-void insert_head(cdllist *elm, cdllist *list);
+int insert_head(cdllist *elm, cdllist *list);
 
 // Insert an element at the back of the list.
-void insert_tail(cdllist *elm, cdllist *list);
+int insert_tail(cdllist *elm, cdllist *list);
 
 // Remove and return the first element from the list.
 // Returns NULL if the list is empty.

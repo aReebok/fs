@@ -6,8 +6,6 @@
 #include "bufcache.h"
 #include "diskdrv.h"
 
-extern diskdrv* ssd; 
-
 void print_list_links(cdllist* list) { // for debugging
     cdllist* tmp = list;
         if (is_empty(tmp)) {

@@ -1,3 +1,6 @@
 .vscode
 build/*
+test/build
+*.log
+*.err
 a.out
