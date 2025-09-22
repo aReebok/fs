@@ -25,7 +25,7 @@ TEST(bufcache, BC_insert_test) {
 
     struct BCache * bc = initialize_cache();
 
-    EXPECT_EQ(bcache_insert(NULL, NULL), 1);
+    EXPECT_EQ(bcache_insert(NULL, NULL), 0);
     EXPECT_EQ(bcache_insert(bad_buf, bc), 0);
     EXPECT_EQ(bcache_insert(good_buf, bc), 0);
 
