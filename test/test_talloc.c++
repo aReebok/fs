@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 extern "C" {
-    #include "../talloc.h"
+    #include "talloc.h"
 }
 
 TEST(talloc, allocate_pass) {

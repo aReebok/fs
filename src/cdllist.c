@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include "cdllist.h"
 #include "talloc.h"
-#include <stdio.h>
 #include "helpercode.h"
 
 int insert_head(cdllist *elm, cdllist *list) {

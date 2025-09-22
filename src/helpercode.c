@@ -1,9 +1,9 @@
 #ifndef HLPRCD_C
 #define HLPRCD_C
 
-#include "helpercode.h"
 #include <stdio.h>
 #include <string.h>
+#include "helpercode.h"
 
 #define LOG_STR_FORMAT "%s\n"
 int std_print_enabled = 1;

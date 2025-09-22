@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 
 extern "C" {
-    #include "../bufcache.h"
+    #include "bufcache.h"
 }
 
 TEST(bufcache, initialization_test) {

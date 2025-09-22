@@ -12,7 +12,7 @@ else
 endif
 
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -g -I$(PROJECT_ROOT) $(PLATFORM_CXXFLAGS)
+CXXFLAGS = -std=c++17 -Wall -g -I$(PROJECT_ROOT)/include $(PLATFORM_CXXFLAGS)
 LDFLAGS = -lgtest -lpthread
 
 OBJS = test_talloc.o test_main.o test_bufcache.o

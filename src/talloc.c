@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "talloc.h"
-#include <assert.h>
 #include "helpercode.h"
 
 typedef struct Node Node;

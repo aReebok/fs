@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cdllist.h"
-#include "talloc.h"
-#include "buffer.h"
-#include "bufcache.h"
-#include "diskdrv.h"
+#include "include/cdllist.h"
+#include "include/talloc.h"
+#include "include/buffer.h"
+#include "include/bufcache.h"
+#include "include/diskdrv.h"
 
 void print_list_links(cdllist* list) { // for debugging
     cdllist* tmp = list;
