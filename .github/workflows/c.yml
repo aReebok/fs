@@ -13,6 +13,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install GoogleTest from source
+      run: |
+        git clone https://github.com/google/googletest.git
+        cd googletest
+        cmake -B build
+        cmake --build build
+        sudo cmake --install build
+
     - name: make
       run: make
     - name: make test
