@@ -22,11 +22,8 @@ jobs:
         cmake --build build
         sudo cmake --install build
 
-    - name: Install LCOV from source
-      run: |
-        git clone https://github.com/linux-test-project/lcov.git
-        cd lcov
-        sudo make install
+    - name: Install lcov for coverage
+      run: sudo apt-get update && sudo apt-get install -y lcov
 
     - name: make
       run: make
