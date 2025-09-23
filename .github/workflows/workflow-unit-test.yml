@@ -22,6 +22,9 @@ jobs:
         cmake --build build
         sudo cmake --install build
 
+    - name: Install lcov for coverage
+      run: sudo apt-get update && sudo apt-get install -y lcov
+
     - name: make
       run: make
     - name: make coverage
