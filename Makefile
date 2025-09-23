@@ -7,7 +7,7 @@ BUILD_DIR = build
 SRC_DIR = src
 TEST_DIR = test/build
 
-SRC_FILES = bufcache.c buffer.c cdllist.c diskdrv.c helpercode.c talloc.c 
+SRC_FILES = bufcache.c buffer.c cdllist.c diskdrv.c util.c talloc.c 
 
 # Object file names
 # talloc.o is now separated because its source is in SRC_DIR while the others are treated differently

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "talloc.h"
-#include "helpercode.h"
+#include "util.h"
 
 typedef struct Node Node;
 
@@ -20,6 +20,7 @@ Node* insert_front(Node* head, void* item) {
 }
 
 void *talloc(size_t size) {
+    if (size <= 0) return NULL;
     void* alloc = malloc(size);
     if (alloc == NULL)
         perr("talloc: malloc failed.");
@@ -43,29 +44,3 @@ void texit(int status) {
     tfree();
     exit(status);
 }
-
-// void display(Node *head){
-//     printf("(");
-//     while(head != NULL){
-//         printf(" %p,", head->item);
-//         head = head->next;
-//     }
-//     puts(")");
-// }
-
-
-// int main(){
-//     int* p = talloc(sizeof(int)*2);
-//     p[0] = 100;
-//     p[1] = 200;
-//     int* p2 = talloc(sizeof(int)*2);
-//     p2[0] = 150;
-//     p2[1] = 250;
-
-//     for (int i = 0; i < 2; i++) {
-//         printf("%d %d %d\n", i, p[i], p2[i]);
-//     }
-
-//     display(ACTIV_LIST);
-//     texit(0);
-// }

@@ -17,7 +17,7 @@ LDFLAGS = -lgtest -lpthread
 
 OBJS = test_talloc.o test_main.o test_bufcache.o
 TEST_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))
-BUILD_OBJS = ../build/talloc.o ../build/bufcache.o ../build/buffer.o ../build/cdllist.o ../build/helpercode.o ../build/diskdrv.o
+BUILD_OBJS = ../build/talloc.o ../build/bufcache.o ../build/buffer.o ../build/cdllist.o ../build/util.o ../build/diskdrv.o
 
 PROJECT_ROOT = ..
 BUILD_DIR = $(PROJECT_ROOT)/test/build

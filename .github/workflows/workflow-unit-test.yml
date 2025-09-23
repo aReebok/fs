@@ -1,4 +1,4 @@
-name: C CI
+name: Git Continious Integration Unit Tests
 
 on:
   push:

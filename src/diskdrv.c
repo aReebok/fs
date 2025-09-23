@@ -5,6 +5,7 @@
 #include "diskdrv.h"
 #include "talloc.h"
 
+#define VFS "test.vfs"
 diskdrv * ssd;
 
 // Helper functions ----
@@ -93,7 +94,7 @@ size_t read_curr_block(FILE* fp, char* data) {
 size_t data_block_read(Buffer* r_buf, diskdrv* device) {
     int index = jump(device->fs, device->data_block_start, r_buf->block_no);
     if (index != r_buf->block_no) {  // check to see if reached correct block 
-        printf("jumped to an incorrect block number while reading file: find[%d]: actual ret[%d]\n", r_buf->block_no, index);
+        printf("Warning [data_block_read]: jumped to an incorrect block number while reading file: find[%d]: actual ret[%d]\n", r_buf->block_no, index);
         texit(1);
     }
     return read_curr_block(device->fs, r_buf->data);
@@ -103,7 +104,7 @@ size_t data_block_write(Buffer* w_buf, diskdrv* device){
 
     int index = jump(device->fs, device->data_block_start, w_buf->block_no);
     if (index != w_buf->block_no) {  // check to see if reached correct block 
-        printf("jumped to an incorrect block number while reading file: find[%d]: actual ret[%d]\n", w_buf->block_no, index);
+        printf("Warning [data_block_write]: jumped to an incorrect block number while reading file: find[%d]: actual ret[%d]\n", w_buf->block_no, index);
         texit(1);
     }
     fseek(device->fs, ftell(device->fs), SEEK_SET);

@@ -1,7 +1,8 @@
 #include "buffer.h"
 #include "talloc.h"
 
-// struct definition
+#define BCACHE_SIZE     8
+
 typedef struct BCache BCache;
 struct BCache {
     cdllist * BUF_HASH_QUEUE;

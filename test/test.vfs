@@ -1,0 +1,14 @@
+super_block 4
+inode_table 5
+disk_block 6
+test super block content here
+test inode 1 content here
+test disk block 0 content here
+test disk block 1 content here
+test disk block 2 content here
+test disk block 3 content here
+test disk block 4 content here
+test disk block 5 content here
+test disk block 6 content here
+test disk block 7 content here
+test disk block 8 content here
