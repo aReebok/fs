@@ -68,8 +68,8 @@ REPORTS_DIR = $(TEST_DIR)/reports
 coverage: test
 	@echo "Generating code coverage report..."
 	mkdir -p $(REPORTS_DIR)
-	lcov -q --capture --initial --directory . --output-file $(REPORTS_DIR)/coverage.info --ignore-errors inconsistent,inconsistent,inconsistent,inconsistent,unsupported,unsupported,unsupported,unsupported,format,format
-	lcov -q --capture --directory . --output-file $(REPORTS_DIR)/coverage.info --ignore-errors inconsistent,inconsistent,inconsistent,inconsistent,unsupported,unsupported,unsupported,unsupported,format,format
+	lcov -q --capture --initial --directory . --output-file $(REPORTS_DIR)/coverage.info --ignore-errors inconsistent,inconsistent,inconsistent,inconsistent,unsupported,unsupported,unsupported,unsupported,format,format,mismatch
+	lcov -q --capture --directory . --output-file $(REPORTS_DIR)/coverage.info --ignore-errors inconsistent,inconsistent,inconsistent,inconsistent,unsupported,unsupported,unsupported,unsupported,format,format,mismatch
 	lcov -q --remove $(REPORTS_DIR)/coverage.info '*/test/*' '*/include/*' --output-file $(REPORTS_DIR)/filtered_coverage.info
 	genhtml -q $(REPORTS_DIR)/filtered_coverage.info --output-directory $(TEST_DIR)/coverage_report
 	@echo "Code coverage report generated in ./coverage_report/index.html"
