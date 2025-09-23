@@ -4,7 +4,7 @@
 #include "util.h"
 
 int insert_head(cdllist *elm, cdllist *list) {
-    if (list == NULL) {
+    if (list == NULL || elm == NULL) {
         perr("[insert_head] === Critical: List is uninitialized and cannot insert element to list\n");
         return 1;
     }
@@ -21,7 +21,7 @@ int insert_head(cdllist *elm, cdllist *list) {
 }
 
 int insert_tail(cdllist *elm, cdllist *list) {
-    if (list == NULL) {
+    if (list == NULL || elm == NULL) {
         perr("[insert_tail] === Critical: List is uninitialized and cannot insert element to list\n");
         return 1;
     }
@@ -49,13 +49,16 @@ cdllist* remove_from_head(cdllist* list) {
     return ret_item;
 }
 
-void remove_from_list(cdllist* elm) {
+int remove_from_list(cdllist* elm) {
+    if (elm == NULL) return 1; // TODO add warning plogs
     cdllist* before = elm->prev;
     cdllist* after = elm->next;
+    if (before == NULL || after == NULL) return 1;
 
     before->next = after;
     after->prev = before;
     elm->next = elm->prev = elm;
+    return 0;
 }
 
 int size(const cdllist* const list) {

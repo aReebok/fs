@@ -44,6 +44,8 @@ clean:
 	rm -rf $(BUILD_DIR) $(TARGET) $(TEST_DIR)
 
 test: all
+	# Delete old coverage data
+	rm -f $(TEST_DIR)/*.gcda $(TEST_DIR)/*.gcno
 	@echo "Building and running tests..."
 	@make -C test
 

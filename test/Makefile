@@ -18,7 +18,7 @@ CXXFLAGS = -std=c++17 -Wall -g -I$(PROJECT_ROOT)/include $(PLATFORM_CXXFLAGS) --
 # Add --coverage to LDFLAGS for linking the coverage libraries
 LDFLAGS = -lgtest -lpthread --coverage
 
-OBJS = test_talloc.o test_main.o test_bufcache.o
+OBJS = test_talloc.o test_main.o test_bufcache.o test_cdllist.o
 TEST_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))
 BUILD_OBJS = ../build/talloc.o ../build/bufcache.o ../build/buffer.o ../build/cdllist.o ../build/util.o ../build/diskdrv.o
 
