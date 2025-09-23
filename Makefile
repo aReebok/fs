@@ -1,6 +1,10 @@
 CC = gcc
 # Added -Iinclude to CFLAGS so the compiler knows where to find the .h files
-CFLAGS = -Wall -O2 -Iinclude 
+# Added --coverage flag for code coverage analysis
+CFLAGS = -Wall -O2 -Iinclude --coverage
+
+# LDFLAGS is explicitly defined for the linker, also with --coverage
+LDFLAGS = --coverage
 
 # Directories
 BUILD_DIR = build
@@ -29,7 +33,7 @@ $(BUILD_DIR):
 
 # Rule to link the final executable
 $(TARGET): $(BUILD_OBJS)
-	$(CC) $(CFLAGS) $(BUILD_OBJS) -o $(TARGET)
+	$(CC) $(LDFLAGS) $(BUILD_OBJS) -o $(TARGET)
 
 #-------------------------------------------------------------------------------
 # Compilation Rules
@@ -55,3 +59,20 @@ clean:
 test: all 
 	@echo "Building and running tests..."
 	@make -C test
+
+# #-------------------------------------------------------------------------------
+# # LCOV Coverage Rules
+# #-------------------------------------------------------------------------------
+
+REPORTS_DIR = $(TEST_DIR)/reports
+coverage: test
+	@echo "Generating code coverage report..."
+	mkdir -p $(REPORTS_DIR)
+	lcov -q --capture --initial --directory . --output-file $(REPORTS_DIR)/coverage.info --ignore-errors inconsistent,inconsistent,inconsistent,inconsistent,unsupported,unsupported,unsupported,unsupported,format,format
+	lcov -q --capture --directory . --output-file $(REPORTS_DIR)/coverage.info --ignore-errors inconsistent,inconsistent,inconsistent,inconsistent,unsupported,unsupported,unsupported,unsupported,format,format
+	lcov -q --remove $(REPORTS_DIR)/coverage.info '*/test/*' '*/include/*' --output-file $(REPORTS_DIR)/filtered_coverage.info
+	genhtml -q $(REPORTS_DIR)/filtered_coverage.info --output-directory $(TEST_DIR)/coverage_report
+	@echo "Code coverage report generated in ./coverage_report/index.html"
+	@echo "==============================================================="
+	@echo "--- File Coverage Summary ---"
+	lcov --list $(REPORTS_DIR)/filtered_coverage.info
