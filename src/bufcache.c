@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "helpercode.h"
+#include "util.h"
 #include "bufcache.h"
 #include "diskdrv.h"
+#include "util.h"
 
 #define CHECK_NULL(var) \
     if ((var) == NULL) { \
@@ -11,16 +12,17 @@
     }
 
 int bcache_insert(Buffer * const buf, struct BCache * bc) {
-    if (buf == NULL || bc == NULL)
+    if (buf == NULL || bc == NULL || buf->block_no < 0 || buf->device_no < 0)
         return 1;
     
     plog("> Adding a buffer to buffer pool: ...\n");
     int buf_h = hash_buffer(buf);
-    if (insert_head(&buf -> fl_hook, bc -> BUF_FREE_LIST)) {
+    if (buf_h < 0) return 1;    
+    if (insert_head(&buf->fl_hook, bc->BUF_FREE_LIST)) {
         perr("Error: Could not add buffer to FREE LIST");
         return 1;
     }
-    if (insert_tail(&buf -> hq_hook, bc -> BUF_HASH_QUEUE + buf_h)) {
+    if (insert_tail(&buf->hq_hook, bc->BUF_HASH_QUEUE + buf_h)) {
         perr("Error: Could not add buffer to HASH QUEUE");
         return 1;
     }
@@ -31,20 +33,23 @@ struct BCache * initialize_cache() {
     struct BCache * bc = talloc(sizeof(*bc));
     CHECK_NULL(bc);
 
-    bc -> BUF_FREE_LIST = talloc(sizeof(cdllist));
-    CHECK_NULL(bc -> BUF_FREE_LIST);
+    bc->BUF_FREE_LIST = talloc(sizeof(cdllist));
+    CHECK_NULL(bc->BUF_FREE_LIST);
     
-    bc -> BUF_FREE_LIST -> next = bc->BUF_FREE_LIST;
-    bc -> BUF_FREE_LIST -> prev = bc->BUF_FREE_LIST;
-    // TODO: lets add a few buffer free list in init code
+    bc->BUF_FREE_LIST->next = bc->BUF_FREE_LIST;
+    bc->BUF_FREE_LIST->prev = bc->BUF_FREE_LIST;
 
     bc->BUF_HASH_QUEUE = talloc(sizeof(cdllist) * HASH_SIZE);
-    CHECK_NULL(bc -> BUF_HASH_QUEUE);
+    CHECK_NULL(bc->BUF_HASH_QUEUE);
 
     for(int i = 0; i < HASH_SIZE; i++) {
-        // Does this abomination work as I think it does?
         bc->BUF_HASH_QUEUE[i].next = bc->BUF_HASH_QUEUE + i;
         bc->BUF_HASH_QUEUE[i].prev = bc->BUF_HASH_QUEUE + i;
+    }
+
+    for (int i = 0; i < BCACHE_SIZE; i++) { // initialize invalid [status = 0] buffers
+        Buffer* temp_buf = create_buf(1, i, 0); 
+        bcache_insert(temp_buf, bc);
     }
     return bc;
 }
@@ -54,10 +59,10 @@ void print_hash_queue(struct BCache *bc) {
     char str[128];
     for (int i = 0; i < HASH_SIZE; i++) {
         sprintf(str, "Bucket %d: head=%p next=%p prev=%p size=%d\n",
-               i, bc -> BUF_HASH_QUEUE + i,
-               bc -> BUF_HASH_QUEUE[i].next,
-               bc -> BUF_HASH_QUEUE[i].prev,
-            size(bc -> BUF_HASH_QUEUE + i));
+               i, bc->BUF_HASH_QUEUE + i,
+               bc->BUF_HASH_QUEUE[i].next,
+               bc->BUF_HASH_QUEUE[i].prev,
+            size(bc->BUF_HASH_QUEUE + i));
         plog(str);
     }
     plog("");
@@ -67,13 +72,13 @@ Buffer * search_hq(int block_num, struct BCache *bc) {
     if (block_num < 0 || bc == NULL)
         return NULL;
     int buf_h = hash_block_num(block_num);
-    cdllist * hque = bc -> BUF_HASH_QUEUE + buf_h;
-    cdllist * iter = hque -> next;
+    cdllist * hque = bc->BUF_HASH_QUEUE + buf_h;
+    cdllist * iter = hque->next;
     while (iter != hque) {
         Buffer * buf = container_of(iter, Buffer, hq_hook);
-        if(buf -> block_no == block_num)
+        if(buf->block_no == block_num)
             return buf;
-        iter = iter -> next;
+        iter = iter->next;
     }
     return NULL;
 }
@@ -99,10 +104,9 @@ Buffer* getblk(int const blk_num, struct BCache *bc) {
             }
             
             buf->status |= B_LOCKED;
-            remove_from_list(&buf -> fl_hook);
+            remove_from_list(&buf->fl_hook);
             ret = buf;
-        }
-        else {
+        } else {
             cdllist* node = remove_from_head(bc->BUF_FREE_LIST);
             if(node == NULL) {
                 printf("sleeping...\n");
@@ -117,7 +121,7 @@ Buffer* getblk(int const blk_num, struct BCache *bc) {
             }
             
             buf->status |= B_LOCKED;
-            remove_from_list(&buf -> hq_hook);
+            remove_from_list(&buf->hq_hook);
 
             buf->device_no = 0; // TODO: Need to bring in dev#... no device support till .vfs design is concrete
             buf->block_no = blk_num;
@@ -132,12 +136,12 @@ Buffer* getblk(int const blk_num, struct BCache *bc) {
 
 Buffer* bread(int const blk_num, struct BCache *bc) {
     if (blk_num < 0) {
-        printf("ERROR in bread: Invalid block number: %d\n", blk_num);
+        printf("Warning [bread]: Invalid block number: %d\n", blk_num);
         return NULL;
     }
     Buffer* buf = getblk(blk_num, bc);
     if (buf == NULL) {
-        puts("ERROR in bread: Buffer not found. getlblk failed");
+        puts("Warning [bread]: Buffer not found. getlblk failed");
         return NULL;
     }
     if (buf->status & B_VALID)
@@ -145,7 +149,6 @@ Buffer* bread(int const blk_num, struct BCache *bc) {
 
     data_block_read(buf, ssd);
     buf->status |= B_VALID;
-    // process sleeps till read
     return buf;
 }
 
@@ -159,6 +162,7 @@ void brelse(Buffer* locked_buf, BCache* bc) {
         insert_head(&locked_buf->fl_hook, bc->BUF_FREE_LIST);
     // lower processor execution level to allow interrupts;
     locked_buf->status &= ~B_LOCKED; // unlock(buffer)
+    locked_buf = NULL;
 }
 
 void bwrite(Buffer* buf, struct BCache *bc) {

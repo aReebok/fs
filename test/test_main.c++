@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 extern "C" {
-    #include "../helpercode.h"
+    #include "util.h"
 }
 
 int main(int argc, char **argv) {

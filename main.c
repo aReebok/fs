@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cdllist.h"
-#include "talloc.h"
-#include "buffer.h"
-#include "bufcache.h"
-#include "diskdrv.h"
+#include "include/cdllist.h"
+#include "include/talloc.h"
+#include "include/buffer.h"
+#include "include/bufcache.h"
+#include "include/diskdrv.h"
 
 void print_list_links(cdllist* list) { // for debugging
     cdllist* tmp = list;
@@ -40,14 +40,7 @@ void print_buffer_info_free_list(cdllist* list) { // for debugging
 
 int main() {
     struct BCache * buffer_cache = initialize_cache();
-    #define VFS "test.vfs"
     ssd = initialize_fs(VFS);
-
-    // initializes with a few buffers in free list
-    for (int i = 0; i < 7; i++) {
-        Buffer* temp_buf = create_buf(1, i, 0); // status = 0; meaning invalid data
-        bcache_insert(temp_buf, buffer_cache);
-    }
 
     // Tests bread and getblk
     Buffer* third_line_buf = bread(3, buffer_cache); 

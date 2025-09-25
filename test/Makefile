@@ -1,3 +1,4 @@
+# test/Makefile
 # --- Detect OS for portability ---
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
@@ -12,12 +13,14 @@ else
 endif
 
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -g -I$(PROJECT_ROOT) $(PLATFORM_CXXFLAGS)
-LDFLAGS = -lgtest -lpthread
+# Add --coverage to CXXFLAGS for code instrumentation
+CXXFLAGS = -std=c++17 -Wall -g -I$(PROJECT_ROOT)/include $(PLATFORM_CXXFLAGS) --coverage
+# Add --coverage to LDFLAGS for linking the coverage libraries
+LDFLAGS = -lgtest -lpthread --coverage
 
-OBJS = test_talloc.o test_main.o test_bufcache.o
+OBJS = test_talloc.o test_main.o test_bufcache.o test_cdllist.o
 TEST_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))
-BUILD_OBJS = ../build/talloc.o ../build/bufcache.o ../build/buffer.o ../build/cdllist.o ../build/helpercode.o ../build/diskdrv.o
+BUILD_OBJS = ../build/talloc.o ../build/bufcache.o ../build/buffer.o ../build/cdllist.o ../build/util.o ../build/diskdrv.o
 
 PROJECT_ROOT = ..
 BUILD_DIR = $(PROJECT_ROOT)/test/build
@@ -31,7 +34,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 $(BUILD_DIR)/%.o: %.c++
-	$(CXX) $(CXXFLAGS) -c $< -o $@ -c
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGET): $(TEST_OBJS) $(BUILD_OBJS)
 	$(CXX) $(TEST_OBJS) $(BUILD_OBJS) -o $(TARGET) $(LDFLAGS) $(PLATFORM_LDFLAGS)

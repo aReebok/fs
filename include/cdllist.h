@@ -10,7 +10,9 @@
     (type *) ((char*) (ptr) - offsetof(type, member))
 
 #define is_empty(lst) \
-    (lst == NULL || (lst->next == lst && lst->prev == lst))
+    (lst == NULL || \
+     (lst->next == NULL && lst->prev == NULL) || \
+     (lst->next == lst && lst->prev == lst))
 
 typedef struct cdllist cdllist; 
 
@@ -31,7 +33,7 @@ int insert_tail(cdllist *elm, cdllist *list);
 cdllist *remove_from_head(cdllist *list);
 
 // Remove a specific element from its surrounding.
-void remove_from_list(cdllist *elm);
+int remove_from_list(cdllist *elm);
 
 // Count the number of elements in the list.
 // Returns -1 if list is uninitialized.
