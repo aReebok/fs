@@ -4,3 +4,4 @@ test/build
 *.log
 *.err
 a.out
+*.bfs

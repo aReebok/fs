@@ -5,6 +5,7 @@
 #include "include/buffer.h"
 #include "include/bufcache.h"
 #include "include/diskdrv.h"
+#include "bfs_drv.h"
 
 void print_list_links(cdllist* list) { // for debugging
     cdllist* tmp = list;
@@ -41,7 +42,8 @@ void print_buffer_info_free_list(cdllist* list) { // for debugging
 int main() {
     struct BCache * buffer_cache = initialize_cache();
     ssd = initialize_fs(VFS);
-
+    floppy = initialize_bfs("floppy.bfs");
+    
     // Tests bread and getblk
     Buffer* third_line_buf = bread(3, buffer_cache); 
     // Buffer* third_line_buf_again = bread(3, buffer_cache); // buffer found in HQ, but buffer is busy [sleeping]
