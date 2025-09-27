@@ -15,7 +15,7 @@ TEST(bufcache, search_hq_empty) {
     struct BCache * bc = initialize_cache();
     ASSERT_EQ(search_hq(-1, NULL), nullptr);
     ASSERT_EQ(search_hq(-1, bc), nullptr);
-    ASSERT_EQ(search_hq(10, bc), nullptr);
+    ASSERT_EQ(search_hq(BCACHE_SIZE + 1, bc), nullptr);
     ASSERT_EQ(search_hq(1e8, bc), nullptr);
     tfree();
 }

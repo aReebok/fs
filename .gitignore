@@ -5,3 +5,4 @@ test/build
 *.err
 a.out
 *.bfs
+*.vfs
