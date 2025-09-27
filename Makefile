@@ -14,7 +14,7 @@ SRC_DIR = src
 TEST_DIR = test/build
 REPORTS_DIR = $(TEST_DIR)/reports
 
-SRC_FILES = bufcache.c buffer.c cdllist.c diskdrv.c util.c talloc.c
+SRC_FILES = bufcache.c buffer.c cdllist.c diskdrv.c util.c talloc.c inode.c inocache.c
 OBJS_SRC = $(patsubst %.c, %.o, $(SRC_FILES))
 OBJS = main.o $(OBJS_SRC)
 BUILD_OBJS = $(addprefix $(BUILD_DIR)/,$(OBJS))

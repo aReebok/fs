@@ -1,7 +1,7 @@
 #include "buffer.h"
 #include "talloc.h"
 
-#define BCACHE_SIZE     8
+#define BCACHE_SIZE     16
 
 typedef struct BCache BCache;
 struct BCache {
