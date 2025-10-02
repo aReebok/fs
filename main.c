@@ -81,12 +81,37 @@ int main() {
     floppy = initialize_bfs("floppy.bfs");
 
     printf("size of sublock is %d\n\n", sizeof(SuBlk));
-    // write_sublk();
+    sublk* temp = create_sublk();
+    write_sublk(temp, floppy);
 
-    printf("size of inode-disk %lu\n", sizeof(DiskInode)); 
-    printf("size of inode-incore %lu\n", sizeof(Inode));
+    sublk* temp2 = read_sublk(floppy);
+    printf("SuBlk fields from temp2:\n");
+    printf("  file_system_size: %d\n", temp2->file_system_size);
+    printf("  num_of_free_blocks: %d\n", temp2->num_of_free_blocks);
+    printf("  free_block_list: ");
+    for (int i = 0; i < 164; i++) {
+        printf("%u ", temp2->free_block_list[i]);
+    }
+    printf("\n");
+    printf("  inode_list_size: %d\n", temp2->inode_list_size);
+    printf("  num_of_free_inodes: %d\n", temp2->num_of_free_inodes);
+    printf("  free_inode_list: ");
+    for (int i = 0; i < 64; i++) {
+        printf("%u ", temp2->free_inode_list[i]);
+    }
+    printf("\n");
+    printf("  index_of_next_free_inode: %d\n", temp2->index_of_next_free_inode);
+    printf("  lock_fields: ");
+    for (int i = 0; i < LF_COUNT; i++) {
+        printf("%d ", temp2->lock_fields[i]);
+    }
+    printf("\n");
+    printf("  super_block_modified: %c\n", temp2->super_block_modified);
+    
+    // printf("size of inode-disk %lu\n", sizeof(DiskInode)); 
+    // printf("size of inode-incore %lu\n", sizeof(Inode));
 
-    InodeCache* inode_cache = initialize_icache();
+    // InodeCache* inode_cache = initialize_icache();
 
     // for (int i = 0; i < 6; i++) { // populates with Inodes
     //     DiskInode* temp_dino = create_dinode(1, 1, time(NULL), time(NULL), time(NULL), 1, 0);
@@ -104,8 +129,8 @@ int main() {
     
     // quick check on hash searching:
     // puts("Printing Inode hash search");
-    Inode* temp = search_ino_hq(4, inode_cache);
-    print_inode(temp);
+    // Inode* temp = search_ino_hq(4, inode_cache);
+    // print_inode(temp);
 
     // puts("=====Exiting Main: Safe exiting. Deleting RAM=====");
     texit(0);

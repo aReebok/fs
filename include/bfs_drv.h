@@ -18,7 +18,7 @@
 #define PRE_BLOCK_SIZE 2 // 2 empty blocks at the beginning
 #define SUPER_BLOCK_SIZE 1 // 1 block i.e. 512 bytes
 #define INODE_BLOCK_SIZE 256 // 10 blocks i.e. 512 * 10 bytes
-#define DATA_BLOCK_SIZE 1e6 // 10K Blocks of data blocks. Real size TBD
+#define DATA_BLOCK_SIZE 1e3 // 10K Blocks of data blocks. Real size TBD
 #define SUBLOCK_NUM -1// used for writing to disk...
 
 // DEFINES the filesize of the filesystem
@@ -41,10 +41,10 @@ bfs* initialize_bfs(const char* bfs_path);
 // input -- read
 // returns int, how many chars/bytes read in
 // and fills given buffer with data from bfs
-// size_t data_block_read(Buffer* r_buf, bfs* device);
+int block_read(char* r_data, int blk_no, bfs* device);
 
 // output -- write
 // returns int, how many chars/bytes wrote out
-size_t block_write(Buffer* w_buf, int blk_no, bfs* device);
+int block_write(char* w_data, int blk_no, bfs* device);
 
 #endif

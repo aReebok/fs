@@ -19,7 +19,7 @@ typedef struct sublk SuBlk;
  * May need to remove the cdllist in favor of a c_list instead
  * 
 */
-
+typedef struct sublk sublk;
 struct sublk {
     int file_system_size;
     
@@ -36,6 +36,7 @@ struct sublk {
 
 };
 
+sublk* create_sublk();
 
 int write_sublk(SuBlk * sublk, bfs * dev);
 
