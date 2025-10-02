@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cdllist.h"
+#include <stdint.h>
+#include <string.h>
+#include "bfs_drv.h"
+#include "talloc.h"
+#include "buffer.h"
+
 
 #ifndef _SUPER_BLOCK
 #define _SUPER_BLOCK
@@ -19,11 +24,11 @@ struct sublk {
     int file_system_size;
     
     int num_of_free_blocks;
-    cdllist * free_block_list;
+    uint32_t free_block_list[164];
 
     int inode_list_size;
     int num_of_free_inodes;
-    cdllist * free_inode_list;
+    uint32_t free_inode_list[64];
     int index_of_next_free_inode; // why is this needed? Maybe inode list shouldn't be a cdllist...
 
     int lock_fields[LF_COUNT]; // what is this again
@@ -31,10 +36,10 @@ struct sublk {
 
 };
 
-char * serialize_sublk(SuBlk * sblk);
 
-int write_sublk(SuBlk * sblk);
+int write_sublk(SuBlk * sublk, bfs * dev);
 
+SuBlk * read_sublk(bfs * device);
 
 #endif
 // sblk = 512

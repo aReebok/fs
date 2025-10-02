@@ -9,6 +9,7 @@
 #include "diskdrv.h"
 #include "bfs_drv.h"
 #include "inode.h"
+#include "su_blk.h"
 
 void print_list_links(cdllist* list) { // for debugging
     cdllist* tmp = list;
@@ -79,6 +80,8 @@ int main() {
     ssd = initialize_fs(VFS);
     floppy = initialize_bfs("floppy.bfs");
 
+    printf("size of sublock is %d\n\n", sizeof(SuBlk));
+    // write_sublk();
 
     printf("size of inode-disk %lu\n", sizeof(DiskInode)); 
     printf("size of inode-incore %lu\n", sizeof(Inode));
