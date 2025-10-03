@@ -19,7 +19,7 @@ bfs * initialize_bfs(const char * bfs_path) {
         ERROR(); // TODO: Test in a safe environment whether the semi-colon or braces are necessary
     }
 
-    int f = creat(bfs_path, 0644); // #TODO: ADD checks to maybe not recreate the file everytime?
+    int f = open(bfs_path, O_RDWR | O_CREAT | O_TRUNC); // #TODO: ADD checks to maybe not recreate the file everytime?
 
     // ftruncate takes the created file and shortens/lengthens it to size of BFS... 0 padded
     if (ftruncate(f, BFS_SIZE) == -1) {

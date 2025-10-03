@@ -80,7 +80,7 @@ int main() {
     ssd = initialize_fs(VFS);
     floppy = initialize_bfs("floppy.bfs");
 
-    printf("size of sublock is %d\n\n", sizeof(SuBlk));
+    printf("size of sublock is %ld\n\n", sizeof(SuBlk));
     sublk* temp = create_sublk();
     write_sublk(temp, floppy);
 
@@ -106,7 +106,7 @@ int main() {
         printf("%d ", temp2->lock_fields[i]);
     }
     printf("\n");
-    printf("  super_block_modified: %c\n", temp2->super_block_modified);
+    printf("  super_block_modified: %d\n", temp2->super_block_modified);
     
     // printf("size of inode-disk %lu\n", sizeof(DiskInode)); 
     // printf("size of inode-incore %lu\n", sizeof(Inode));
