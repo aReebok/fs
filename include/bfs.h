@@ -42,4 +42,18 @@ bfs * mkbfs(const char * bfs_path);
 
 int setup_free_block_list(bfs * dev);
 
+//TODO: Functions to be implemented
+
+// Allocates a block from the free list and returns to user. 
+// A rough outline can be found on page 86 of UNIX book
+Buffer * alloc_buffer(bfs * dev);
+
+// No psuedo-code provided but its roughly the reverse of the alloc function
+// Freed block is put into the super_block free_block_list
+// if free_block_list is full, then the freed block becomes a new link
+//  chain of free blocks, and the content of free_block_list are moved to 
+//  free block as an array, and the block is then placed in the free_block_list
+
+int free_buffer(uint32_t block_num);
+
 #endif

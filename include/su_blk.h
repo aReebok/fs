@@ -27,6 +27,7 @@ struct sublk {
     
     int num_of_free_blocks;
     uint32_t free_block_list[FREE_BLOCK_LIST_SIZE];
+    int next_free_index; // in the free_block_list... treated like a stack
 
     int inode_list_size;
     int num_of_free_inodes;

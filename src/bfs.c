@@ -31,11 +31,10 @@ bfs * mkbfs(const char * bfs_path) {
 
     // TODO: Setup free block list
     setup_free_block_list(dev);
+    
     // printf("======Successfully created BFS of size: %d bytes=======\n", BFS_SIZE);
     return dev;
 }
-
-int setup_super_block();
 
 int setup_free_block_list(bfs * dev) {
     // temp pointer for super-block free block list, will fill at the end
@@ -51,15 +50,29 @@ int setup_free_block_list(bfs * dev) {
     uint32_t blk[FREE_ARRAY_BLOCK_SIZE];
 
     while(i < DATA_BLOCK_SIZE) {
+        //  if less than 128 free blocks remaining, should be added to the\
+            buffer free list in super block...
         if (DATA_BLOCK_SIZE - i < FREE_BLOCK_LIST_SIZE) {
-            for(int j = 0; j < (DATA_BLOCK_SIZE - i); j++) {
+            for(int j = 0; j < FREE_BLOCK_LIST_SIZE; j++) {
+                if (i + j > DATA_BLOCK_SIZE) {
+                    free_list_pointer[j + 1] = -1;
+                    continue;
+                }
                 free_list_pointer[j+1] = i + j;
                 dev->incore_sblk->num_of_free_blocks += 1;
             }
             break;
         }
-        for(int j = 0; j < FREE_ARRAY_BLOCK_SIZE; j++) {
-            blk[j] = i+j+1;
+
+        int j;
+        // if remaining blocks are > 128
+        for(j = 0; j < FREE_ARRAY_BLOCK_SIZE; j++) {
+            if (i + j > DATA_BLOCK_SIZE) { //remaining blocks is less than 256
+                blk[j] = -1; // out of blocks, just pad array with -1s
+            }
+            else {
+                blk[j] = i+j+1; // put the blocks into the the array block 
+            }
         }
 
         //  Flips the first and last element... this way the 0th index contains\
