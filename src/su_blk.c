@@ -1,10 +1,9 @@
 #include "su_blk.h"
-#include "bfs_drv.h"
 #include "util.h"
 
 sublk* create_sublk() {
     sublk* new_sublk = (sublk*) talloc(sizeof(sublk));
-    new_sublk->file_system_size = 1;
+    new_sublk->file_system_size = 97;
     new_sublk->num_of_free_blocks = 10000;
     new_sublk->free_block_list[0] = 99;
     new_sublk->free_block_list[1] = 98;
@@ -23,8 +22,12 @@ sublk* create_sublk() {
     return new_sublk;
 }
 
-int write_sublk(SuBlk * sublk, bfs * dev) {
-    char* block = talloc(BLOCK_SIZE);
+char * sublk_to_str(SuBlk * sublk) {
+    char * block;
+    
+    if((block = talloc(BLOCK_SIZE)) == NULL)
+        return NULL;
+
     int offset = 0;
     memcpy(block + offset, &(sublk->file_system_size), sizeof(sublk->file_system_size));
     offset += sizeof(sublk->file_system_size);
@@ -52,20 +55,12 @@ int write_sublk(SuBlk * sublk, bfs * dev) {
 
     memcpy(block + offset, &(sublk->super_block_modified), sizeof(sublk->super_block_modified));
     offset += sizeof(sublk->super_block_modified);
-    if (block_write(block, SUBLOCK_NUM, dev) == -1) {
-        perr("Block Write has failed in writing the Super Block to the file.");
-        return 1;
-    }
-    return 0;
+
+    return block;
 }
 
-SuBlk * read_sublk(bfs * dev) {
-    char store[BLOCK_SIZE];
+SuBlk * read_sublk(char store[]) {
     sublk* blk = (sublk*) talloc(sizeof(sublk));
-    if(block_read(store, SUBLOCK_NUM, dev) == -1) {
-        perr("Block Read has failed in reading the Super Block from the file.");
-        return NULL;
-    }
     memcpy(blk, store, sizeof(sublk));
     return blk;
 }

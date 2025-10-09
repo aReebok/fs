@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "bfs_drv.h"
 #include "talloc.h"
 #include "buffer.h"
 
@@ -38,9 +37,8 @@ struct sublk {
 
 sublk* create_sublk();
 
-int write_sublk(SuBlk * sublk, bfs * dev);
+char * sublk_to_str(sublk * sublk);
 
-SuBlk * read_sublk(bfs * device);
+SuBlk * read_sublk(char store[]);
 
 #endif
-// sblk = 512

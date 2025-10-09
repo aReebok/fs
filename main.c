@@ -7,7 +7,9 @@
 #include "inode.h"
 #include "inocache.h"
 #include "diskdrv.h"
-#include "bfs_drv.h"
+// #include "bfs_drv.h"
+// #include "bfs.h"
+#include "driver.h"
 #include "inode.h"
 #include "su_blk.h"
 
@@ -78,13 +80,19 @@ void print_inode_info_free_list(cdllist* list) { // for debugging
 int main() {
     struct BCache * buffer_cache = initialize_cache();
     ssd = initialize_fs(VFS);
-    floppy = initialize_bfs("floppy.bfs");
+    floppy = mkbfs("floppy.bfs");
 
     printf("size of sublock is %ld\n\n", sizeof(SuBlk));
     sublk* temp = create_sublk();
-    write_sublk(temp, floppy);
+    block_write(sublk_to_str(temp), SUBLOCK_NUM, floppy);
 
-    sublk* temp2 = read_sublk(floppy);
+    char store[4];
+    if (block_read(store, SUBLOCK_NUM, floppy) == -1) {
+        perr("Block Read has failed in reading the Super Block from the file.");
+        return 1;
+    }
+
+    sublk* temp2 = read_sublk(store);
     printf("SuBlk fields from temp2:\n");
     printf("  file_system_size: %d\n", temp2->file_system_size);
     printf("  num_of_free_blocks: %d\n", temp2->num_of_free_blocks);
