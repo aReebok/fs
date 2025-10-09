@@ -52,9 +52,9 @@ int setup_free_block_list(bfs * dev) {
 
     while(i < DATA_BLOCK_SIZE) {
         if (DATA_BLOCK_SIZE - i < FREE_BLOCK_LIST_SIZE) {
-            // TODO: Add the remaining blocks to the superblock's free-blk list 
             for(int j = 0; j < (DATA_BLOCK_SIZE - i); j++) {
                 free_list_pointer[j+1] = i + j;
+                dev->incore_sblk->num_of_free_blocks += 1;
             }
             break;
         }
