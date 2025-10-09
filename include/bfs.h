@@ -18,7 +18,7 @@
 
 #define PRE_BLOCK_SIZE 2 // 2 empty blocks at the beginning
 #define SUPER_BLOCK_SIZE 1 // 1 block i.e. 1024 bytes
-#define INODE_BLOCK_SIZE 256 // 256 blocks i.e. 10 * 1024 bytes
+#define INODE_BLOCK_SIZE 1 // 256 blocks i.e. 10 * 1024 bytes
 #define DATA_BLOCK_SIZE 1e4 // 10K Blocks of data blocks. Real size TBD
 
 #define SUBLOCK_NUM -1// used for writing to disk...
@@ -31,6 +31,7 @@ typedef struct bfs bfs;
 struct bfs {
     int bfs;
     sublk * incore_sblk;
+
 };
 
 extern bfs * floppy;
@@ -39,5 +40,6 @@ extern bfs * floppy;
 // sets start of data block
 bfs * mkbfs(const char * bfs_path);
 
+int setup_free_block_list(bfs * dev);
 
 #endif

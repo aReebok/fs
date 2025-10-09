@@ -83,10 +83,9 @@ int main() {
     floppy = mkbfs("floppy.bfs");
 
     printf("size of sublock is %ld\n\n", sizeof(SuBlk));
-    sublk* temp = create_sublk();
-    block_write(sublk_to_str(temp), SUBLOCK_NUM, floppy);
+    block_write(sublk_to_str(floppy->incore_sblk), SUBLOCK_NUM, floppy);
 
-    char store[4];
+    char store[BLOCK_SIZE];
     if (block_read(store, SUBLOCK_NUM, floppy) == -1) {
         perr("Block Read has failed in reading the Super Block from the file.");
         return 1;

@@ -18,9 +18,12 @@ int block_write(char* w_data, int blk_no, bfs* device) {
         lseek(device->bfs, PRE_BLOCK_SIZE*BLOCK_SIZE, SEEK_SET);
         return write(device->bfs, w_data, BLOCK_SIZE);
     }
-    else {
-        //TODO: Find offset and write the block... it might be an indoe so 
-        // read the block first if necessary
+    else if (blk_no >= 0) {
+        //TODO: Find offset and write the block... 
+        //TODO: read the block first if necessary
+        lseek(device->bfs, (PRE_BLOCK_SIZE + SUPER_BLOCK_SIZE + \
+                        INODE_BLOCK_SIZE + blk_no) * BLOCK_SIZE, SEEK_SET);
+        return write(device->bfs, w_data, BLOCK_SIZE);
     }
     return 0;
 }
