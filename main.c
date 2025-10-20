@@ -78,11 +78,10 @@ void print_inode_info_free_list(cdllist* list) { // for debugging
 
 
 int main() {
-    struct BCache * buffer_cache = initialize_cache();
-    ssd = initialize_fs(VFS);
     floppy = mkbfs("floppy.bfs");
 
-    printf("size of sublock is %ld\n\n", sizeof(SuBlk));
+    printf("size of sublock is %ld\n\n", sizeof(sublk));
+    print_sublk(floppy->incore_sblk);
     block_write(sublk_to_str(floppy->incore_sblk), SUBLOCK_NUM, floppy);
 
     char store[BLOCK_SIZE];
@@ -92,54 +91,9 @@ int main() {
     }
 
     sublk* temp2 = read_sublk(store);
-    printf("SuBlk fields from temp2:\n");
-    printf("  file_system_size: %d\n", temp2->file_system_size);
-    printf("  num_of_free_blocks: %d\n", temp2->num_of_free_blocks);
-    printf("  free_block_list: ");
-    for (int i = 0; i < 164; i++) {
-        printf("%u ", temp2->free_block_list[i]);
-    }
-    printf("\n");
-    printf("  inode_list_size: %d\n", temp2->inode_list_size);
-    printf("  num_of_free_inodes: %d\n", temp2->num_of_free_inodes);
-    printf("  free_inode_list: ");
-    for (int i = 0; i < 64; i++) {
-        printf("%u ", temp2->free_inode_list[i]);
-    }
-    printf("\n");
-    printf("  index_of_next_free_inode: %d\n", temp2->index_of_next_free_inode);
-    printf("  lock_fields: ");
-    for (int i = 0; i < LF_COUNT; i++) {
-        printf("%d ", temp2->lock_fields[i]);
-    }
-    printf("\n");
-    printf("  super_block_modified: %d\n", temp2->super_block_modified);
-    
-    // printf("size of inode-disk %lu\n", sizeof(DiskInode)); 
-    // printf("size of inode-incore %lu\n", sizeof(Inode));
+    print_sublk(temp2);                 // TODO URGENT fix this, expected lock_fields = 0; returned lock_fields: 55 [super_block_modified should be 55........]
 
-    // InodeCache* inode_cache = initialize_icache();
-
-    // for (int i = 0; i < 6; i++) { // populates with Inodes
-    //     DiskInode* temp_dino = create_dinode(1, 1, time(NULL), time(NULL), time(NULL), 1, 0);
-    //     Inode* temp_ino = create_inode(temp_dino, 0, 1, i); 
-    //     icache_insert(temp_ino, inode_cache);
-    // }
-
-    // print_list_links(inode_cache->INO_FREE_LIST);
-    // print_hash_queue(inode_cache);
-
-
-    // print_list_links(inode_cache->INO_FREE_LIST);                   // print out links
-    // print_hash_queue(inode_cache);
-    // print_inode_info_free_list(inode_cache->INO_FREE_LIST);        // print out actual inode information
-    
-    // quick check on hash searching:
-    // puts("Printing Inode hash search");
-    // Inode* temp = search_ino_hq(4, inode_cache);
-    // print_inode(temp);
-
-    // puts("=====Exiting Main: Safe exiting. Deleting RAM=====");
+    puts("=====Exiting Main: Safe exiting. Deleting RAM=====");
     texit(0);
 }
 

@@ -2,6 +2,21 @@
 #include <stdint.h>
 #include "inode.h"
 #include "talloc.h"
+#include <string.h> 
+
+DiskInode* create_empty_dinode() {
+    DiskInode* empty_dinode = talloc(sizeof(DiskInode));
+    memset(empty_dinode, 0, sizeof(DiskInode));
+    return empty_dinode;
+}
+
+Inode* create_empty_inode() {
+    DiskInode* empty_dinode = create_empty_dinode();
+    Inode* empty_inode = talloc(sizeof(Inode));
+    memset(empty_inode, 0, sizeof(Inode));
+    empty_inode->dino = empty_dinode;
+    return empty_inode;
+}
 
 DiskInode* create_dinode(uint8_t fileown, 
     uint8_t filtyp, 

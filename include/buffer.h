@@ -13,17 +13,17 @@
 #define B_WANTED    0x16
 
 // TODO: Create inline functins to set Buffer status 
-
-typedef struct Buffer Buffer;
-
-struct Buffer { 
+typedef struct Buffer { 
     unsigned int device_no;
     unsigned int block_no;
     unsigned int status;
     char data[BLOCK_SIZE];
     cdllist fl_hook;
     cdllist hq_hook; 
-};
+} Buffer;
+
+// Returns an empty, invalid buffer
+Buffer *create_empty_buf();
 
 // Create a new buffer object with given device, block, and status flags.
 Buffer *create_buf(const int devno,

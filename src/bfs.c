@@ -40,20 +40,20 @@ int setup_free_block_list(bfs * dev) {
     // temp pointer for super-block free block list, will fill at the end
     uint32_t * free_list_pointer = dev -> incore_sblk -> free_block_list;
     dev->incore_sblk->num_of_free_blocks = 1;
-    free_list_pointer[0] = 0; // points to block 0 in the block section, which \
-                                    is the first node of free-blk linked list
+    free_list_pointer[0] = 0; /* points to block 0 in the block section, which \
+                                    is the first node of free-blk linked list */
 
-    int i = 0; //   block number 0 will contain address for blocks from 1-256\
-                    (256 numbers, 4 bytes each)... then block 256 will contain\
-                    the continuation (address from block 257-512)... then 512...
+    int i = 0;              /*  block number 0 will contain address for blocks from 1-256\
+                            (256 numbers, 4 bytes each)... then block 256 will contain\
+                            the continuation (address from block 257-512)... then 512... */
 
     uint32_t blk[FREE_ARRAY_BLOCK_SIZE];
 
     while(i < DATA_BLOCK_SIZE) {
-        //  if less than 128 free blocks remaining, should be added to the\
-            buffer free list in super block...
-        if (DATA_BLOCK_SIZE - i < FREE_BLOCK_LIST_SIZE) {
-            for(int j = 0; j < FREE_BLOCK_LIST_SIZE; j++) {
+        /*  if less than 128 free blocks remaining, should be added to the\
+            buffer free list in super block... */
+        if (DATA_BLOCK_SIZE - i < SU_FREE_BLOCK_LIST_SIZE) {
+            for(int j = 0; j < SU_FREE_BLOCK_LIST_SIZE; j++) {
                 if (i + j > DATA_BLOCK_SIZE) {
                     free_list_pointer[j + 1] = -1;
                     continue;
@@ -75,8 +75,8 @@ int setup_free_block_list(bfs * dev) {
             }
         }
 
-        //  Flips the first and last element... this way the 0th index contains\
-            the pointer to the next block in the free block linked list...
+        /*   Flips the first and last element... this way the 0th index contains\
+            the pointer to the next block in the free block linked list... */
         int temp = blk[FREE_ARRAY_BLOCK_SIZE - 1 ];
         blk[FREE_ARRAY_BLOCK_SIZE - 1] = blk[0];
         blk[0] = temp;
@@ -88,7 +88,8 @@ int setup_free_block_list(bfs * dev) {
         i += FREE_ARRAY_BLOCK_SIZE; 
     }
 
-    for(int i = 0; i < FREE_BLOCK_LIST_SIZE; i++) {
+    for(int i = 0; i < SU_FREE_BLOCK_LIST_SIZE; i++) {
 
     }
+    return 0;
 }

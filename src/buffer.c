@@ -2,7 +2,9 @@
 #include "buffer.h"
 #include "talloc.h"
 #include "util.h"
-// member functions just for buffer struct
+#include <string.h> 
+
+// TODO make these hash funcs into #defines
 int hash_buffer(const Buffer* const buf) {
     return buf->block_no % HASH_SIZE;
 }
@@ -13,6 +15,12 @@ int hash_block_num(int const block_no) {
 
 void set_buf_status(Buffer* const buf, const unsigned int status) {
     buf->status = status;
+}
+
+Buffer* create_empty_buf() {
+    Buffer* empty_buf = talloc(sizeof(Buffer));
+    memset(empty_buf, 0, sizeof(Buffer));
+    return empty_buf; 
 }
 
 Buffer* create_buf(const int devno, const int blockno, const int status) {
