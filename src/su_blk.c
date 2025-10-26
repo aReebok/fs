@@ -81,7 +81,7 @@ void print_sublk(const sublk* s) {
     printf("  num_of_free_blocks      : %d\n", s->num_of_free_blocks);
 
     printf("  free_block_list (164)   :");
-    for (int i = 0; i < 164; ++i) {
+    for (int i = 0; i < 128; ++i) {
         if (i % 16 == 0) printf("\n    ");
         printf("%6u", (unsigned)s->free_block_list[i]);
     }

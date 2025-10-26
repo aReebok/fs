@@ -14,7 +14,7 @@
 #define LF_COUNT 10
 #define SU_FREE_BLOCK_LIST_SIZE 128
 #define SU_FREE_INODE_LIST_SIZE 64 
-#define FREE_ARRAY_BLOCK_SIZE (BLOCK_SIZE/sizeof(uint32_t))
+#define LINKED_LIST_DATA_BLK_SIZE (BLOCK_SIZE/sizeof(uint32_t))
 
 typedef struct sublk SuBlk;
 

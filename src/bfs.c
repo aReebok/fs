@@ -37,59 +37,32 @@ bfs * mkbfs(const char * bfs_path) {
 }
 
 int setup_free_block_list(bfs * dev) {
-    // temp pointer for super-block free block list, will fill at the end
-    uint32_t * free_list_pointer = dev -> incore_sblk -> free_block_list;
-    dev->incore_sblk->num_of_free_blocks = 1;
-    free_list_pointer[0] = 0; /* points to block 0 in the block section, which \
-                                    is the first node of free-blk linked list */
+    uint32_t * sblk_free_list_ptr = dev->incore_sblk->free_block_list;
+    uint32_t linked_list_address_block[LINKED_LIST_DATA_BLK_SIZE];
 
-    int i = 0;              /*  block number 0 will contain address for blocks from 1-256\
-                            (256 numbers, 4 bytes each)... then block 256 will contain\
-                            the continuation (address from block 257-512)... then 512... */
-
-    uint32_t blk[FREE_ARRAY_BLOCK_SIZE];
-
-    while(i < DATA_BLOCK_SIZE) {
-        /*  if less than 128 free blocks remaining, should be added to the\
-            buffer free list in super block... */
-        if (DATA_BLOCK_SIZE - i < SU_FREE_BLOCK_LIST_SIZE) {
-            for(int j = 0; j < SU_FREE_BLOCK_LIST_SIZE; j++) {
-                if (i + j > DATA_BLOCK_SIZE) {
-                    free_list_pointer[j + 1] = -1;
-                    continue;
-                }
-                free_list_pointer[j+1] = i + j;
-                dev->incore_sblk->num_of_free_blocks += 1;
-            }
-            break;
-        }
-
-        int j;
-        // if remaining blocks are > 128
-        for(j = 0; j < FREE_ARRAY_BLOCK_SIZE; j++) {
-            if (i + j > DATA_BLOCK_SIZE) { //remaining blocks is less than 256
-                blk[j] = -1; // out of blocks, just pad array with -1s
-            }
-            else {
-                blk[j] = i+j+1; // put the blocks into the the array block 
-            }
-        }
-
-        /*   Flips the first and last element... this way the 0th index contains\
-            the pointer to the next block in the free block linked list... */
-        int temp = blk[FREE_ARRAY_BLOCK_SIZE - 1 ];
-        blk[FREE_ARRAY_BLOCK_SIZE - 1] = blk[0];
-        blk[0] = temp;
-
-        // WRITE BLOCK to the harddisk... 
-        block_write((void *) blk, i, dev);
-
-        // i += 256, skipping to the next node node in the linked list...
-        i += FREE_ARRAY_BLOCK_SIZE; 
-    }
+    int free_data_blk_address = 1;
 
     for(int i = 0; i < SU_FREE_BLOCK_LIST_SIZE; i++) {
-
+        sblk_free_list_ptr[i] = free_data_blk_address;
+        free_data_blk_address++;
     }
-    return 0;
+
+    int next_linked_list_address = sblk_free_list_ptr[0];
+
+    uint32_t ll_address_blk[LINKED_LIST_DATA_BLK_SIZE];
+
+    while(free_data_blk_address < DATA_BLOCK_SIZE) {
+        
+        for(int ll_address_blk_index = 0; ll_address_blk_index < LINKED_LIST_DATA_BLK_SIZE; ll_address_blk_index++) {
+            if (free_data_blk_address >= DATA_BLOCK_SIZE) {
+                ll_address_blk[ll_address_blk_index] = 0;
+            }
+            else {
+                ll_address_blk[ll_address_blk_index] = free_data_blk_address;
+                free_data_blk_address++;
+            }
+        }
+        block_write((void *) ll_address_blk, next_linked_list_address, dev);
+        next_linked_list_address = ll_address_blk[0];
+    }
 }
