@@ -41,3 +41,20 @@ void print_buffer(Buffer * const buf) {
     printf("\tData: %s\n", buf->data);
     printf("------------------------------------------------------\n");
 }
+
+void print_buffer_info_free_list(cdllist* list) {
+    if (is_empty(list)) {
+        printf("Empty list\n");
+        return;
+    } else {
+        printf("> Printing actual buffer content from free list...\n");
+    };
+
+    cdllist* curr = list->next;
+    Buffer* temp;
+    do {
+        temp = container_of(curr, Buffer, fl_hook);
+        print_buffer(temp);
+        curr = curr->next;
+    } while(curr != list);
+}

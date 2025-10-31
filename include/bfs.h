@@ -16,21 +16,21 @@
 #include "talloc.h"
 #include "su_blk.h"
 
-#define PRE_BLOCK_SIZE 2 // 2 empty blocks at the beginning
-#define SUPER_BLOCK_SIZE 1 // 1 block i.e. 1024 bytes
-#define INODE_BLOCK_SIZE 1 // 256 blocks i.e. 10 * 1024 bytes
-#define DATA_BLOCK_SIZE 1e4 // 10K Blocks of data blocks. Real size TBD
+#define PRE_BLOCK_COUNT 0           // 1 empty block @ beginning
+#define SUPER_BLOCK_COUNT 1         // 1 block i.e. 1024 bytes
+#define INODE_BLOCK_COUNT 10        // 10 blocks i.e. 10 * 1024 bytes
+#define DATA_BLOCK_COUNT 1e4        // 10K Blocks of data blocks. Real size TBD
 
-#define SUBLOCK_NUM -1// used for writing to disk...
+#define SUBLK_INDEX 0               // used for writing to disk...
 
 // DEFINES the filesize of the filesystem
-#define BFS_SIZE (BLOCK_SIZE * (PRE_BLOCK_SIZE + SUPER_BLOCK_SIZE \
-                                + INODE_BLOCK_SIZE + DATA_BLOCK_SIZE))
+#define BFS_SIZE (BLOCK_SIZE * (PRE_BLOCK_COUNT + SUPER_BLOCK_COUNT \
+                                + INODE_BLOCK_COUNT + DATA_BLOCK_COUNT))
 
 typedef struct bfs bfs;
 struct bfs {
     int bfs;
-    sublk * incore_sblk;
+    sublk * incore_sublk;
 
 };
 
@@ -40,13 +40,14 @@ extern bfs * floppy;
 // sets start of data block
 bfs * mkbfs(const char * bfs_path);
 
-int setup_free_block_list(bfs * dev);
+int setup_free_inode_list(bfs* dev);
+int setup_free_block_list(bfs* dev);
 
 //TODO: Functions to be implemented
 
 // Allocates a block from the free list and returns to user. 
 // A rough outline can be found on page 86 of UNIX book
-Buffer * alloc_buffer(bfs * dev);
+Buffer * alloc_buffer(bfs* dev);
 
 // No psuedo-code provided but its roughly the reverse of the alloc function
 // Freed block is put into the super_block free_block_list

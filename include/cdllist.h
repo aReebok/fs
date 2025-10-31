@@ -39,4 +39,8 @@ int remove_from_list(cdllist *elm);
 // Returns -1 if list is uninitialized.
 int size(const cdllist *const list);
 
+
+// helper print func
+//
+void print_list_links(cdllist* list);
 #endif // _CDLLIST_H

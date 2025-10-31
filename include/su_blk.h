@@ -11,12 +11,10 @@
 
 #define LOCKED_SU_BLOCK_LIST    0x01    
 #define LOCKED_SU_INODE_LIST    0x02
-#define LF_COUNT 10
+
 #define SU_FREE_BLOCK_LIST_SIZE 128
 #define SU_FREE_INODE_LIST_SIZE 64 
-#define LINKED_LIST_DATA_BLK_SIZE (BLOCK_SIZE/sizeof(uint32_t))
-
-typedef struct sublk SuBlk;
+#define FREE_ADDRS_CAPACITY (BLOCK_SIZE/sizeof(uint32_t))
 
 /*
  * Struct definition for superblock...
@@ -29,7 +27,7 @@ struct sublk {
     
     int num_of_free_blocks;
     uint32_t free_block_list[SU_FREE_BLOCK_LIST_SIZE];
-    int next_free_index;
+    int next_free_block_index;
 
     int inode_list_size;
     int num_of_free_inodes;
@@ -38,15 +36,16 @@ struct sublk {
 
     int lock_fields;
     char super_block_modified;
-
 };
 
 sublk* create_empty_sublk();
+
 sublk* create_sublk();
 
-char * sublk_to_str(sublk * sublk);
+char* sublk_to_str(sublk * sublk);
 
-sublk * read_sublk(char store[]);
+sublk* read_sublk(char store[]);
+
 void print_sublk(const sublk* s);
 
 #endif

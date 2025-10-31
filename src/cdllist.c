@@ -71,3 +71,18 @@ int size(const cdllist* const list) {
     }
     return s;
 }
+
+void print_list_links(cdllist* list) {
+    cdllist* tmp = list;
+        if (is_empty(tmp)) {
+            printf("Printing empty list\n");
+        } else {
+            printf("Printing non-empty list\n");
+        };
+    printf("\tHEAD\n");
+    do {
+        printf("\t{%p: next[%p] prev[%p]}\n", tmp, tmp->next, tmp->prev);
+        tmp = tmp->next;
+    } while(tmp != list);
+    printf("\tTAIL\n\n");
+}

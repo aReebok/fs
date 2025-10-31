@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #define IHASH_SIZE  4
+#define INODES_PER_BLOCK BLOCK_SIZE/sizeof(Inode)
 
 #define I_LOCKED    0x01        // inode locked
 #define I_INODIF    0x02        // in-core inode modified
@@ -56,5 +57,6 @@ Inode* create_inode(DiskInode* dino, const int status, const int dev_no, const i
 int hash_inode(const Inode *const ino);
 int hash_inonum(int inonum);
 
+void print_inode_info_free_list(cdllist* list); // for debugging
 
 #endif // _INODE_H

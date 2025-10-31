@@ -36,6 +36,9 @@ int hash_block_num(int const block_no);
 
 // Overwrite the status flags of a buffer.
 void set_buf_status(Buffer *const buf, unsigned int status);
+
+// helper print func for debugging
 void print_buffer(Buffer * const buf);
+void print_buffer_info_free_list(cdllist* list);
 
 #endif // _BUFFER_H

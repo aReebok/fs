@@ -13,11 +13,11 @@
 // input -- read
 // returns int, how many chars/bytes read in
 // and fills given buffer with data from bfs
-int block_read(char* r_data, int blk_no, bfs* device);
+int block_read(char* r_data, int blk_no, int byte_offset, bfs* device);
 
 // output -- write
 // returns int, how many chars/bytes wrote out
-int block_write(char* w_data, int blk_no, bfs* device);
+int block_write(char* w_data, int blk_no, int byte_offset, bfs* device);
 
 
 #endif

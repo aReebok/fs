@@ -26,44 +26,47 @@ sublk* create_sublk() {
     return new_sublk;
 }
 
-char * sublk_to_str(SuBlk * sublk) {
-    char * block;
+char* sublk_to_str(sublk* s) {
+    char* block;
     
-    if((block = talloc(BLOCK_SIZE)) == NULL)
+    if((block = talloc(BLOCK_SIZE)) == NULL) // TODO better error report: use the plog stuff probably right
         return NULL;
 
     int offset = 0;
-    memcpy(block + offset, &(sublk->file_system_size), sizeof(sublk->file_system_size));
-    offset += sizeof(sublk->file_system_size);
+    memcpy(block + offset, &(s->file_system_size), sizeof(s->file_system_size));
+    offset += sizeof(s->file_system_size);
 
-    memcpy(block + offset, &(sublk->num_of_free_blocks), sizeof(sublk->num_of_free_blocks));
-    offset += sizeof(sublk->num_of_free_blocks);
+    memcpy(block + offset, &(s->num_of_free_blocks), sizeof(s->num_of_free_blocks));
+    offset += sizeof(s->num_of_free_blocks);
 
-    memcpy(block + offset, sublk->free_block_list, sizeof(sublk->free_block_list));
-    offset += sizeof(sublk->free_block_list);
+    memcpy(block + offset, s->free_block_list, sizeof(s->free_block_list));
+    offset += sizeof(s->free_block_list);
 
-    memcpy(block + offset, &(sublk->inode_list_size), sizeof(sublk->inode_list_size));
-    offset += sizeof(sublk->inode_list_size);
+    memcpy(block + offset, &(s->next_free_block_index), sizeof(s->free_block_list));
+    offset += sizeof(s->next_free_block_index);
 
-    memcpy(block + offset, &(sublk->num_of_free_inodes), sizeof(sublk->num_of_free_inodes));
-    offset += sizeof(sublk->num_of_free_inodes);
+    memcpy(block + offset, &(s->inode_list_size), sizeof(s->inode_list_size));
+    offset += sizeof(s->inode_list_size);
 
-    memcpy(block + offset, sublk->free_inode_list, sizeof(sublk->free_inode_list));
-    offset += sizeof(sublk->free_inode_list);
+    memcpy(block + offset, &(s->num_of_free_inodes), sizeof(s->num_of_free_inodes));
+    offset += sizeof(s->num_of_free_inodes);
 
-    memcpy(block + offset, &(sublk->index_of_next_free_inode), sizeof(sublk->index_of_next_free_inode));
-    offset += sizeof(sublk->index_of_next_free_inode);
+    memcpy(block + offset, s->free_inode_list, sizeof(s->free_inode_list));
+    offset += sizeof(s->free_inode_list);
 
-    memcpy(block + offset, &(sublk->lock_fields), sizeof(sublk->lock_fields));
-    offset += sizeof(sublk->lock_fields);
+    memcpy(block + offset, &(s->index_of_next_free_inode), sizeof(s->index_of_next_free_inode));
+    offset += sizeof(s->index_of_next_free_inode);
 
-    memcpy(block + offset, &(sublk->super_block_modified), sizeof(sublk->super_block_modified));
-    offset += sizeof(sublk->super_block_modified);
+    memcpy(block + offset, &(s->lock_fields), sizeof(s->lock_fields));
+    offset += sizeof(s->lock_fields);
+
+    memcpy(block + offset, &(s->super_block_modified), sizeof(s->super_block_modified));
+    offset += sizeof(s->super_block_modified);
 
     return block;
 }
 
-SuBlk * read_sublk(char store[]) {
+sublk* read_sublk(char store[]) {
     sublk* blk = (sublk*) talloc(sizeof(sublk));
     memcpy(blk, store, sizeof(sublk));
     return blk;
@@ -80,8 +83,8 @@ void print_sublk(const sublk* s) {
     printf("  file_system_size        : %d\n", s->file_system_size);
     printf("  num_of_free_blocks      : %d\n", s->num_of_free_blocks);
 
-    printf("  free_block_list (164)   :");
-    for (int i = 0; i < 128; ++i) {
+    printf("  free_block_list (%d)   :", SU_FREE_BLOCK_LIST_SIZE);
+    for (int i = 0; i < SU_FREE_BLOCK_LIST_SIZE; ++i) {
         if (i % 16 == 0) printf("\n    ");
         printf("%6u", (unsigned)s->free_block_list[i]);
     }
@@ -90,8 +93,8 @@ void print_sublk(const sublk* s) {
     printf("  inode_list_size         : %d\n", s->inode_list_size);
     printf("  num_of_free_inodes      : %d\n", s->num_of_free_inodes);
 
-    printf("  free_inode_list (64)    :");
-    for (int i = 0; i < 64; ++i) {
+    printf("  free_inode_list (%d)    :", SU_FREE_INODE_LIST_SIZE);
+    for (int i = 0; i < SU_FREE_INODE_LIST_SIZE; ++i) {
         if (i % 16 == 0) printf("\n    ");
         printf("%6u", (unsigned)s->free_inode_list[i]);
     }
