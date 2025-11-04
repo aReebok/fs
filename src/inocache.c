@@ -3,7 +3,6 @@
 #include "util.h"
 #include "inode.h"
 #include "inocache.h"
-#include "diskdrv.h"
 #include "util.h"
 
 #define CHECK_NULL(var) \

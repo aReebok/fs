@@ -6,7 +6,7 @@
     perr("Talloc failed: BFS_DEVICE could not be created");\
     return NULL;
 
-bfs* floppy;
+extern bfs* floppy;
 
 bfs* mkbfs(const char* bfs_path) {
     bfs* dev = talloc(sizeof(*dev));
@@ -32,9 +32,9 @@ bfs* mkbfs(const char* bfs_path) {
     setup_free_block_list(dev);
     
     // TODO: Write out incore super block to disk
-    block_write(sublk_to_str(dev->incore_sublk), SUBLK_INDEX, 0, dev);
+    block_write(sublk_to_str(dev->incore_sublk), SUBLK_INDEX, dev);
 
-    printf("======Successfully created BFS of size: %f bytes=======\n", BFS_SIZE);
+    printf("======Successfully created BFS of size: %0.f bytes=======\n", BFS_SIZE);
     return dev;
 }
 
@@ -74,7 +74,7 @@ int setup_free_block_list(bfs* dev) {
                 curr_blk_no++;
             }
         }
-        block_write((void *) free_addrs, next_array_address, 0, dev);
+        block_write((void *) free_addrs, next_array_address, dev);
         next_array_address = free_addrs[0];
     }
 

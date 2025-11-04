@@ -6,7 +6,6 @@
 #include "bufcache.h"
 #include "inode.h"
 #include "inocache.h"
-#include "diskdrv.h"
 #include "bfs.h"
 #include "driver.h"
 #include "inode.h"
@@ -16,7 +15,7 @@ int main() {
     floppy = mkbfs("floppy.bfs");
 
     char store[BLOCK_SIZE];
-    if (block_read(store, SUBLK_INDEX, 0, floppy) == -1) {
+    if (block_read(store, SUBLK_INDEX, floppy) == -1) {
         perr("Block Read has failed in reading the Super Block from the file.");
         return 1;
     }

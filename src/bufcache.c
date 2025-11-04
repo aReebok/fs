@@ -2,7 +2,8 @@
 #include <unistd.h>
 #include "util.h"
 #include "bufcache.h"
-#include "diskdrv.h"
+#include "driver.h"
+#include "bfs.h"
 #include "util.h"
 
 #define CHECK_NULL(var) \
@@ -10,6 +11,23 @@
         perr("Critical Talloc Failure. Halting Buffer Cache Initialization Process.\n"); \
         return NULL; \
     }
+
+extern bfs* floppy;
+void print_hash_queue(struct BCache *bc) {
+    plog("Printing each HashQueue [HEAD NODE only]");
+    char str[128];
+    for (int i = 0; i < HASH_SIZE; i++) {
+        sprintf(str, "Bucket %d: head=%p next=%p prev=%p size=%d\n",
+               i, bc->BUF_HASH_QUEUE + i,
+               bc->BUF_HASH_QUEUE[i].next,
+               bc->BUF_HASH_QUEUE[i].prev,
+            size(bc->BUF_HASH_QUEUE + i));
+        plog(str);
+    }
+    plog("");
+}
+
+extern void print_buffer_info_free_list(cdllist* list);
 
 int bcache_insert(Buffer * const buf, struct BCache * bc) {
     if (buf == NULL || bc == NULL || buf->block_no < 0 || buf->device_no < 0)
@@ -29,8 +47,8 @@ int bcache_insert(Buffer * const buf, struct BCache * bc) {
     return 0;
 }
 
-struct BCache * initialize_cache() {
-    struct BCache * bc = talloc(sizeof(*bc));
+struct BCache* initialize_cache() {
+    struct BCache* bc = talloc(sizeof(*bc));
     CHECK_NULL(bc);
 
     bc->BUF_FREE_LIST = talloc(sizeof(cdllist));
@@ -54,20 +72,6 @@ struct BCache * initialize_cache() {
     return bc;
 }
 
-void print_hash_queue(struct BCache *bc) {
-    plog("Printing each HashQueue [HEAD NODE only]");
-    char str[128];
-    for (int i = 0; i < HASH_SIZE; i++) {
-        sprintf(str, "Bucket %d: head=%p next=%p prev=%p size=%d\n",
-               i, bc->BUF_HASH_QUEUE + i,
-               bc->BUF_HASH_QUEUE[i].next,
-               bc->BUF_HASH_QUEUE[i].prev,
-            size(bc->BUF_HASH_QUEUE + i));
-        plog(str);
-    }
-    plog("");
-}
-
 Buffer * search_hq(int block_num, struct BCache *bc) {
     if (block_num < 0 || bc == NULL)
         return NULL;
@@ -83,7 +87,6 @@ Buffer * search_hq(int block_num, struct BCache *bc) {
     return NULL;
 }
 
-extern void print_buffer_info_free_list(cdllist* list);
 
 Buffer* getblk(int const blk_num, struct BCache *bc) {
     Buffer* ret = NULL;
@@ -116,7 +119,7 @@ Buffer* getblk(int const blk_num, struct BCache *bc) {
 
             Buffer* buf = container_of(node, Buffer, fl_hook);
             if (buf->status & B_DELWRI) {
-                data_block_write(buf, ssd);
+                block_write(buf->data, buf->block_no, floppy);
                 continue;
             }
             
@@ -147,7 +150,7 @@ Buffer* bread(int const blk_num, struct BCache *bc) {
     if (buf->status & B_VALID)
         return buf;
 
-    data_block_read(buf, ssd);
+    block_read(buf->data, blk_num, floppy);
     buf->status |= B_VALID;
     return buf;
 }
@@ -168,7 +171,7 @@ void brelse(Buffer* locked_buf, BCache* bc) {
 void bwrite(Buffer* buf, struct BCache *bc) {
     // TODO: see textbook impl
     // initiate disk write;
-    int len = data_block_write(buf, ssd);
+    int len = block_write(buf->data, buf->block_no, floppy);
     printf("Written %d characters to disk.\n", len);
     // if (I/O synchronous){
         // sleep(event I/O complete);

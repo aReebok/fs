@@ -1,8 +1,9 @@
 #include "gtest/gtest.h"
 
 extern "C" {
+    #include "bfs.h"
+    #include "driver.h"
     #include "bufcache.h"
-    #include "diskdrv.h"
 }
 
 TEST(bufcache, initialization_test) {
@@ -47,43 +48,43 @@ TEST(bufcache, bufcache_insert_test) {
 
 // }
 
-TEST(bufcache, getblk_test) {
-    ssd = initialize_fs(VFS);
-    // BCache* bc = initialize_cache();
-    /* scenario 2 - blk not in HQ, take buffer off free list */
-    // TODO fix below failing getblk call
-    // Buffer* getblk_invalid = getblk(-100, bc);
-    // Buffer* buf_blk3 = getblk(3, bc);
-    // EXPECT_STREQ(buf_blk3->data, "test disk block 3 content here");
+// TEST(bufcache, getblk_test) {
+//     // ssd = initialize_fs(VFS);
+//     // BCache* bc = initialize_cache();
+//     /* scenario 2 - blk not in HQ, take buffer off free list */
+//     // TODO fix below failing getblk call
+//     // Buffer* getblk_invalid = getblk(-100, bc);
+//     // Buffer* buf_blk3 = getblk(3, bc);
+//     // EXPECT_STREQ(buf_blk3->data, "test disk block 3 content here");
 
-    // TODO test to make sure buf decresed in size, but it's still on HQ?
-    // TODO test to make sure buf is locked
+//     // TODO test to make sure buf decresed in size, but it's still on HQ?
+//     // TODO test to make sure buf is locked
 
-    /* TODO scenario 1 - block in HQ, block is ready */
-    /* TODO scenario 3 - block NOT in HQ, block from FL is DELAY WRITE */
-    /* TODO scenario 4 - block NOT in HQ, no buf avail on FL */
-    /* TODO scenario 5 - block in HQ, buf marked locked */
+//     /* TODO scenario 1 - block in HQ, block is ready */
+//     /* TODO scenario 3 - block NOT in HQ, block from FL is DELAY WRITE */
+//     /* TODO scenario 4 - block NOT in HQ, no buf avail on FL */
+//     /* TODO scenario 5 - block in HQ, buf marked locked */
     
 
-    tfree();
-}
+//     tfree();
+// }
 
 TEST(bufcache, bread_test) {
-    ssd = initialize_fs(VFS);
+    floppy = mkbfs("test.bfs");
     BCache* bc = initialize_cache();
 
     Buffer* b_invalid = bread(-1, bc);
     EXPECT_EQ(b_invalid, nullptr);
 
     Buffer* not_in_bc = bread(4, bc);
-    EXPECT_STREQ(not_in_bc->data, "test disk block 4 content here");
+    EXPECT_STREQ(not_in_bc->data, "");
     EXPECT_EQ(not_in_bc->status & B_LOCKED, B_LOCKED);
     EXPECT_EQ(not_in_bc->status & B_VALID, B_VALID);
     brelse(not_in_bc, bc);
 
     /* hits the case where block from getblk is valid */
     Buffer* cached_buf = bread(4, bc); 
-    EXPECT_STREQ(cached_buf->data, "test disk block 4 content here");
+    EXPECT_STREQ(cached_buf->data, "");
 
 
     // TODO should reading an unused block return NULL?
@@ -94,36 +95,40 @@ TEST(bufcache, bread_test) {
     tfree();
 }
 
-// TEST(bufcache, breada_test) {
-// }
+// // TEST(bufcache, breada_test) {
+// // }
 
 TEST(bufcache, bwrite_test) {
-    ssd = initialize_fs(VFS);
+    floppy = mkbfs("test.bfs");
     BCache* bc = initialize_cache();
-    Buffer* valid_buf = bread(7, bc); 
-    const char* overwrite_data = "Hello world";
-    int c = 0;
-    while(overwrite_data[c] != '\0' && c < BLOCK_SIZE) {
-        valid_buf->data[c] = overwrite_data[c];
-        c++;
-    }
-    valid_buf->data[c] = '\0';
+    Buffer* w_blk = getblk(7, bc);
+    const char msg[] = "Hello World! ";
 
-    bwrite(valid_buf, bc);
-    brelse(valid_buf, bc);
+    if (w_blk) {
+        memcpy(w_blk->data, msg, strlen(msg));
+        w_blk->status |= B_VALID;
+        bwrite(w_blk, bc);
+        brelse(w_blk, bc);
+    }
     Buffer* tmp_read = bread(7, bc); 
-    EXPECT_STREQ(tmp_read->data, "Hello world");
+    EXPECT_STREQ(tmp_read->data, msg);
 
     tfree();
 }
 
 TEST(bufcache, brelse_test) {
-    ssd = initialize_fs(VFS);
+    floppy = mkbfs("test.bfs");
     BCache* bc = initialize_cache();
 
-    Buffer* valid_buf = bread(5, bc); 
-    Buffer* invalid_buf = bread(6, bc); 
-    invalid_buf->status &= ~B_VALID;  
+    Buffer* valid_buf = getblk(5, bc);
+    valid_buf->status |= B_VALID;
+
+    Buffer* invalid_buf = getblk(6, bc);
+    const char blk_msg5[] = "test disk block 5 content here";
+    const char blk_msg6[] = "test disk block 6 content here";
+
+    memcpy(valid_buf->data, blk_msg5, strlen(blk_msg5));
+    memcpy(invalid_buf->data, blk_msg6, strlen(blk_msg6));
 
     /* valid buffer -> free list tail (MRU) */
     brelse(valid_buf, bc);

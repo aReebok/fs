@@ -34,11 +34,11 @@ struct bfs {
 
 };
 
-extern bfs * floppy;
+bfs* floppy;
 
 // Initilaizes a device given path
 // sets start of data block
-bfs * mkbfs(const char * bfs_path);
+bfs* mkbfs(const char * bfs_path);
 
 int setup_free_inode_list(bfs* dev);
 int setup_free_block_list(bfs* dev);
