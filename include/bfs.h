@@ -34,7 +34,7 @@ struct bfs {
 
 };
 
-bfs* floppy;
+extern bfs* floppy;
 
 // Initilaizes a device given path
 // sets start of data block

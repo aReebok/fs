@@ -12,7 +12,6 @@
         return NULL; \
     }
 
-extern bfs* floppy;
 void print_hash_queue(struct BCache *bc) {
     plog("Printing each HashQueue [HEAD NODE only]");
     char str[128];

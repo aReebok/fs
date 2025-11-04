@@ -6,7 +6,7 @@
     perr("Talloc failed: BFS_DEVICE could not be created");\
     return NULL;
 
-extern bfs* floppy;
+bfs* floppy;
 
 bfs* mkbfs(const char* bfs_path) {
     bfs* dev = talloc(sizeof(*dev));
