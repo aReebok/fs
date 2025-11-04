@@ -6,6 +6,7 @@
 typedef struct Node Node;
 
 Node* ACTIV_LIST = NULL;
+int running_size = 0;
 
 struct Node {
     void* item; 
@@ -21,6 +22,7 @@ Node* insert_front(Node* head, void* item) {
 
 void *talloc(size_t size) {
     if (size <= 0) return NULL;
+    running_size += size;
     void* alloc = malloc(size);
     if (alloc == NULL)
         perr("talloc: malloc failed.");
@@ -36,8 +38,8 @@ void tfree() {
         ACTIV_LIST = ACTIV_LIST->next;
         free(curr->item);
         free(curr);
-        // printf("Freeing node...\n");
     }
+    printf("\nT-Freed %d allocated bytes of memory...\n", running_size);
 }
 
 void texit(int status) {

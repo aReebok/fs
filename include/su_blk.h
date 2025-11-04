@@ -1,40 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "cdllist.h"
+#include <stdint.h>
+#include <string.h>
+#include "talloc.h"
+#include "buffer.h"
+
 
 #ifndef _SUPER_BLOCK
 #define _SUPER_BLOCK
 
-#define LF_COUNT 10
+#define LOCKED_SU_BLOCK_LIST    0x01    
+#define LOCKED_SU_INODE_LIST    0x02
 
-typedef struct sublk SuBlk;
+#define SU_FREE_BLOCK_LIST_SIZE 128
+#define SU_FREE_INODE_LIST_SIZE 64 
+#define FREE_ADDRS_CAPACITY (BLOCK_SIZE/sizeof(uint32_t))
 
 /*
  * Struct definition for superblock...
  * May need to remove the cdllist in favor of a c_list instead
  * 
 */
-
+typedef struct sublk sublk;
 struct sublk {
     int file_system_size;
     
     int num_of_free_blocks;
-    cdllist * free_block_list;
+    uint32_t free_block_list[SU_FREE_BLOCK_LIST_SIZE];
+    int next_free_block_index;
 
     int inode_list_size;
     int num_of_free_inodes;
-    cdllist * free_inode_list;
-    int index_of_next_free_inode; // why is this needed? Maybe inode list shouldn't be a cdllist...
+    uint32_t free_inode_list[SU_FREE_INODE_LIST_SIZE];
+    int index_of_next_free_inode;
 
-    int lock_fields[LF_COUNT]; // what is this again
+    int lock_fields;
     char super_block_modified;
-
 };
 
-char * serialize_sublk(SuBlk * sblk);
+sublk* create_empty_sublk();
 
-int write_sublk(SuBlk * sblk);
+sublk* create_sublk();
 
+char* sublk_to_str(sublk * sublk);
+
+sublk* read_sublk(char store[]);
+
+void print_sublk(const sublk* s);
 
 #endif
-// sblk = 512

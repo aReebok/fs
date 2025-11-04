@@ -3,8 +3,13 @@
 #include "util.h"
 #include "inode.h"
 #include "inocache.h"
-#include "diskdrv.h"
 #include "util.h"
+
+#define CHECK_NULL(var) \
+    if ((var) == NULL) { \
+        perr("Critical Talloc Failure. Halting Incore-Inode Cache Initialization Process.\n"); \
+        return NULL; \
+    }
 
 int icache_insert(Inode* const ino, InodeCache *ic){
     if (ino == NULL || ic == NULL || ino->inode_number < 0 || ino->logical_device_no < 0) 
@@ -27,16 +32,16 @@ int icache_insert(Inode* const ino, InodeCache *ic){
 }
 InodeCache* initialize_icache() {
     InodeCache* ic = talloc(sizeof(*ic));
-    // CHECK_NULL(ic);
+    CHECK_NULL(ic);
 
     ic->INO_FREE_LIST = talloc(sizeof(cdllist));
-    // CHECK_NULL(ic->INO_FREE_LIST);
+    CHECK_NULL(ic->INO_FREE_LIST);
     
     ic->INO_FREE_LIST->next = ic->INO_FREE_LIST;
     ic->INO_FREE_LIST->prev = ic->INO_FREE_LIST;
 
     ic->INO_HASH_QUEUE = talloc(sizeof(cdllist) * IHASH_SIZE);
-    // CHECK_NULL(ic->INO_HASH_QUEUE);
+    CHECK_NULL(ic->INO_HASH_QUEUE);
 
     for(int i = 0; i < IHASH_SIZE; i++) {
         ic->INO_HASH_QUEUE[i].next = ic->INO_HASH_QUEUE + i;
